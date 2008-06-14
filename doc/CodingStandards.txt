@@ -7,11 +7,11 @@ Coding Standards
 	Program Structure
 	-----------------
 
-	The program shall be structured in the following manner. The Root Directory will be called LProg.
+	The program shall be structured in the following manner. The Root Directory will be called lprog.
 
 	Use the :cd command in Vim to change to this directory. Or launch gvim after cding to this dir from a terminal. This should help.
 
-	LProg--
+	lprog--
 	   |
 	   |----+ bin (will contain only the executable files)
 	   |
