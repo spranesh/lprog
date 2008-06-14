@@ -1,0 +1,180 @@
+Author : Pranesh Srinivasan
+Date   : June 13th 2007
+
+Coding Standards
+================
+
+	Program Structure
+	-----------------
+
+	The program shall be structured in the following manner. The Root Directory will be called LProg.
+
+	Use the :cd command in Vim to change to this directory. Or launch gvim after cding to this dir from a terminal. This should help.
+
+	LProg--
+	   |
+	   |----+ bin (will contain only the executable files)
+	   |
+	   |----+ data (will contain test data)
+	   |
+	   |----+ doc (will contain all the necessary documentation)
+	   |
+	   |----+ include (will contain all the .h files)
+	   |
+	   |----+ obj (will contain the object files made during compilation)
+	   |
+	   |----+ src (will contain all the source .cpp files)
+	   |
+	   |----= Makefile (will contain the Makefile. We will try our hand at generating this with autoconf.)
+
+		> Try to not exceed the 80 char limit in a line. If you have to, restrict it to around 100 chars.
+
+		> It will not be necessary to say in your matrix.cpp file, statments like
+			#include "../include/matrix.h"
+
+		  It would suffice to say 
+			#include "matrix.h"
+
+		  This is because in the Makefile, the g++ compilation statements will be written in the following manner
+		  g++ -I include ...
+
+		  (Quoting From man g++ ) 
+		  "Add the directory dir to the list of directories to be searched for header files.  
+		   Directories named by -I are searched before the standard system include directories."
+
+
+		> All filenames, except if necessary documentation should be in lowercase. The .h files relating to a particular .cpp 
+		  file must have the same name.
+
+		> Please put the #ifndef tags in your header files, to prevent inclusion again. The variable should be in the standard gnu format.
+		  For eg., for matrix.h the variable will be MATRIX_H
+		  If you have not used use #ifndef / #define before, read http://www.cppreference.com/preprocessor/preprocessor_if.html
+		  In any case, see the attached folder structure and the example dummy files.
+
+		> Please edit your code with a nice text editor. We do not want \n\r all over the place. Use gvim, gedit, emacs, or notepad++
+
+
+	The start of every file must contain a header of the format you see in the example files. (This is available as the default in my .vimrc)
+
+
+Naming of varibles, functions, et al .. (syntactic sugar)
+==========================================================
+
+	> All variables will begin with a lowercase.
+	> All functions/methods will begin with an uppercase.
+	> All Class names will begin with an uppercase. The word Class in them is to be avoided. Say Class Matrix,
+	  and not Class MatrixCls or something.
+	> However pointers if used, must be suffixed with Ptr. (Since we are coding in C++ keep pointers to a minimum)
+	> On a similar note, Iterators, are supposed to be suffixed with Iter
+	> No function/Class/variable name is to have underscores. Please write them in Camelfont. For eg. the function to 
+          see if a matrix is invertible would be a method in the Matrix Class with the name IsInvertible(args)
+	> Constants are to be written entirely in caps, with underscores seperating different words.
+	  For eg. SHADY_MAX or IS_CHAR_8_BITS_BOOL
+	> Any 2 variable names should have a difference in their first 8 characters. To put it in python :
+	                var1[:8]!=var2[:8]
+	  This will prevent misreading of names, and you can use the auto-complete feature, without having to type in too many characters.
+
+	
+	All in all, remember that variable names are typed only a few times, and read a lot of times. Use Vim's Ctrl+N or Emacs' Ctrl+/
+	auto control feature, if you have trouble typing out the names again and again. You could ofcourse map abbreviations using :map in Vim,
+	if you feel the need for it too.
+
+	I quote my HoD and say, "A good test of names is, 'Can you read your code with the variable names over the telephone?' "
+
+
+
+If-else, for, while Loops and Tabs
+===================================
+	This is not really much of a problem since indent can be used after you write your source code, to put it in the required form.
+
+	The form I recommend is of course the form I use :
+
+	if (condition)
+	{
+		...;
+		......;
+	}
+	else if (condition)
+	{
+		.... ;
+	}
+	else
+	{	
+		blah;
+	}
+
+	Similarly for while and for loops.
+
+	However if it is a one line loop/if clause, I write it as below:
+	for(...;...;..)
+		statement;
+	<blankLine>
+	someOtherStatement;
+
+
+
+Function Comments
+==================
+	Again my .vimrc should have default prototype. After hovering on the function name, hit \fc in normal mode. Do ensure that there
+	is at least a space in the function arg brackets. Mnemonic : \FunctionComment
+
+	Look in the attached files for other examples.
+	But please do delete unnecessary lines, and keep it as short as possible.
+
+	If we are using doxygen, we will be writing comments in the form given in http://www.comp.nus.edu.sg/~cs3215/tools/cplusplus/doxygen.html
+
+
+Change Logs
+============
+	We shall maitain a seperate Changelog.txt file in the docs, where we can all append the changes we have done.
+	Also change the associated function and class documentation if necessary.
+
+	
+Basic Optimisation
+===================
+	Try to write efficient code, without obscuring it. 
+	
+	++i instead of i++ is one of the simplest optimisations you can do to your code.
+	I also strongly recommend replacing 1 line if-else loops with lines like
+		max = (a>b)? a : b;
+
+
+Makefile Standards
+===================
+	Take as many environ variables as possible.
+
+	Settle for a step by step process.
+
+	<more to come in here>
+
+Miscellaneous
+===============
+	Please avoid the use of global variables to the extent you can. Remember with classes, you can often use private variables
+	where necessary.
+
+	Do-while loops are useful. Try using them especially if you have to break out on certain types of input.
+
+	break and continue are one of gods greatest gifts to mankind.
+
+	Also please avoid declaring constants arbitrarily. Put them in the header file, consts.h in the include dir.
+
+	Write classes that act on templates, and not on fixed variable. 
+	
+	Exploit inheritance, polymorphism, default arguments, and operator overloading to the best extent possible.
+
+	If possible, write documentation in either plain text, or LaTeX using TeXmacs.(save the .tm file in this case).
+
+	Check the standard library for code, before writing your own.
+
+	We shall write a common Functions header & .cpp file soon, where we can define max, min, if necessary
+
+	If you are working on the code, please write a mail in this thread saying what you are doing. This will avoid repetition. It will
+	also serve the purpose of assigning a 'task' to each person. 
+
+	If two people are working on different things simultaneously, and submit their code, the task of integrating both the changes is left to
+	any of us. But please do integrate, before you start working on something else. 
+
+	There shall be no versions till we complete enough.
+
+	Please mail a list of 'tasks' that you think are pending for people to pick up and do.
+

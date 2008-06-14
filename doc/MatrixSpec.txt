@@ -1,0 +1,29 @@
+Specifications for Matrix.cpp
+==============================
+
+Store the matrix as a double dimensional array dynamically allocated using new. 
+
+	The Matrix should be a public variable, since we would want to allow direct M[i][j] access to it(?)
+			or
+	Make it a private variable, and allow a Matrix.GetElement(i,j) access to it.
+
+I think the first option is better.
+
+
+The following functions are to be defined.
+  Input, (overloaded >>)
+  Output, (Pretty printing of the matrix, overloaded <<)
+  overloaded matrix operators
+   +, -, * 
+  Invert
+  Rank
+  Lower Triangular Form (Row - Echelon Equivalent) (Required?)
+  GetRow(i) Return the ith row as a vector(?)
+
+  Throw selfDefined Error Class MultError if multiplication is not possible.(?)
+
+Functions outside the class
+  CheckMultCompat - Checks if two matrices M, N are compatible
+ 
+
+Please add to this list if necessary.
