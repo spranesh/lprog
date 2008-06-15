@@ -21,6 +21,9 @@
 # include<vector>
 using namespace std;
 
+# include"exceptions.h"
+
+
 template <typename T>
 class Matrix
 {
@@ -30,7 +33,11 @@ class Matrix
 		T** matrix;
 
 
-		void Matrix(size_t n, size_t m);
+		Matrix(size_t n, size_t m);
+		
+		// functions for accessing number of rows, and number of cols
+		size_t GetNumRows();
+		size_t GetNumCols();
 
 		// We first overload operators as shown below.
 		// If you are new to this, I suggest you have a look at 
@@ -44,9 +51,9 @@ class Matrix
 		Matrix<T>& operator*=(const Matrix<T> &Other);
 
 		// Declare the normal operations
-		Matrix<T>& operator+(const Matrix<T> &Other);
-		Matrix<T>& operator-(const Matrix<T> &Other);
-		Matrix<T>& operator*(const Matrix<T> &Other);
+		Matrix<T>& operator+(const Matrix<T> &Other) const;
+		Matrix<T>& operator-(const Matrix<T> &Other) const;
+		Matrix<T>& operator*(const Matrix<T> &Other) const;
 
 		// Now declare the comparison operations
 		bool operator==(const Matrix<T> &Other);
@@ -61,6 +68,7 @@ class Matrix
 		
 		vector<T> GetRow(size_t row);
 		vector<T> GetCol(size_t col);
+
 
 	private:
 		size_t nRows;
