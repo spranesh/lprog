@@ -16,6 +16,14 @@
 
 #include "matrix.h"
 
+#include <iostream>
+using std::cout;
+using std::cin;
+using std::endl;
+using std::ostream;
+
+#include <iomanip>
+using std::setw;
 
 /*------------------------------------------------------
  * Matrix -- init function of the Matrix Class
@@ -151,10 +159,13 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix<T> &Other)
 template <typename T> 
 Matrix<T>& Matrix<T>::operator*=(const Matrix<T> &Other)
 {
-	// There is no direct way to do this.
-	// Hence we define C = A*B using the * operator
-	// and then delete A, and return C
+	*this = *this * Other;
 
+	// we return *this only to ensure that we can
+	// have for whatever reason, a chain of assignments
+	// and thereby sticking to the C rule of every statement
+	// evaluating to something.
+	return *this;
 }
 
 
@@ -224,8 +235,27 @@ Matrix<T>& Matrix<T>::operator-(const Matrix<T> &Other) const
 template <typename T> 
 Matrix<T>& Matrix<T>::operator*(const Matrix<T> &Other) const
 {
+	int i, j, k;
+	Matrix <T> returnMatrix (nRows, Other.GetNumCols());
 
+	if(mCols != Other.GetNumCols())
+		throw IncompatibleMatricesException();
 
+	else
+	{
+		// we take Sigma(A[i][k]*B[k][j]) to form C[i][j]
+		for (i=0;i<nRows;i++)
+			for(j=0;j<Other.GetNumCols();j++)
+			{
+				returnMatrix[i][j]=0;
+
+				for(k=0;k<mCols;k++)
+					returnMatrix[i][j] += 
+						matrix[i][k] * Other.matrix[k][j];
+			}
+	}
+
+	return &returnMatrix;
 }
 
 /*------------------------------------------------------
@@ -301,6 +331,11 @@ T Matrix<T>::Determinant()
 
 
 
+/*------------------------------------------------------
+ * Matrix<T>::GetRow -- Get the 'row' Row
+ * Args: size_t row
+ * Returns: vector<T>
+ *------------------------------------------------------*/
 template <typename T> 
 vector<T> Matrix<T>::GetRow(size_t row)
 {
@@ -314,6 +349,11 @@ vector<T> Matrix<T>::GetRow(size_t row)
 }
 
 
+/*------------------------------------------------------
+ * Matrix<T>::GetCol -- Get the 'col' Column
+ * Args: size_t col
+ * Returns: vector<T>
+ *------------------------------------------------------*/
 template <typename T> 
 vector<T> Matrix<T>::GetCol(size_t col)
 {
@@ -324,5 +364,25 @@ vector<T> Matrix<T>::GetCol(size_t col)
 
 	return colAsked;
 }
+
+
+
+/*------------------------------------------------------
+ * &operator<< -- overloading the << operator
+ * Args: ostream &output, const Matrix &Instance
+ * Returns: ostream
+ * Pretty Print
+ *------------------------------------------------------*/
+template <typename T> 
+ostream& operator<<(ostream &output, const Matrix<T> &Instance)
+{
+	for (int i=0; i<Instance.GetNumRows(); i++)
+	{
+		for (int j=0; j<Instance.GetNumCols(); j++)
+			output << setw(5) << Instance.matrix[i][j];
+		output << endl; 
+	}
+return output; 
+} 
 
 

@@ -27,6 +27,8 @@ using namespace std;
 template <typename T>
 class Matrix
 {
+	
+
 	public:
 		// We define as a double dimensional array. This should
 		// speed up things quite a lot
@@ -70,11 +72,20 @@ class Matrix
 		vector<T> GetCol(size_t col);
 
 
+		// What follows next is absolutely Crazy stuff.
+		// Read http://www.artima.com/cppsource/simple2.html
+		// This Crazy Stuff inspires what is to follow
+		// Also readhttp://gcc.gnu.org/ml/gcc-help/2005-02/msg00033.html 
+		friend ostream& operator<< <>(ostream &output, const Matrix<T> &Instance);
+
+
 	private:
 		size_t nRows;
 		size_t mCols;	
 		
 };
+
+// A function to tell how ostream should deal with a matrix
 
 #endif
 
