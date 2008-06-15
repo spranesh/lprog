@@ -34,7 +34,7 @@ class Matrix
 		// speed up things quite a lot
 		T** matrix;
 
-
+		//Constructor for the class, with two arguments
 		Matrix(size_t n, size_t m);
 		
 		// functions for accessing number of rows, and number of cols
