@@ -1,15 +1,12 @@
-#This is only an example Makefile. Make using 'make' in this directory
 
-CC=(g++ -I include)
+# set all Warnings and switch on debug
+CC=g++ -Wall -Iinclude -g
 
-all: bin/matrix
+all: matrixLibs
 
-bin/matrix: obj/matrix.o
-	$(CC) obj/matrix.o -o bin/matrix #or something like that
-
-obj/matrix.o:
-	$(CC) -c src/matrix.cpp -o obj/matrix.o #compile only and place output in obj/matrix.o
-
+matrixLibs: src/matrix.cpp include/matrix.h include/exceptions.h
+	$(CC) -c src/matrix.cpp -o obj/matrix.o
+	$(CC) obj/matrix.o -o bin/matrixLib
 
 clean:
 	rm -rf *~ *.o bin/*
