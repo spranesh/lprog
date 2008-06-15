@@ -30,7 +30,7 @@ class Matrix
 		T** matrix;
 
 
-		void Matrix(int n, int m);
+		void Matrix(size_t n, size_t m);
 
 		// We first overload operators as shown below.
 		// If you are new to this, I suggest you have a look at 
@@ -56,15 +56,15 @@ class Matrix
 		// Next we declare the usual Matrix Functions
 		Matrix<T>& RowEchelon(); // Return another Matrix which is a RowEchelon form of this
 		Matrix<T>& Inverse();
-		int Rank();
+		size_t Rank();
 		T Determinant();
 		
-		vector<T> GetRow(int row);
-		vector<T> GetCol(int col);
+		vector<T> GetRow(size_t row);
+		vector<T> GetCol(size_t col);
 
 	private:
-		int nRows;
-		int mCols;	
+		size_t nRows;
+		size_t mCols;	
 		
 };
 

@@ -17,16 +17,16 @@
 #include "matrix.h"
 /*------------------------------------------------------
  * Matrix -- init function of the Matrix Class
- * Args: int nRows, int mCols
+ * Args: size_t nRows, size_t  mCols
  * Returns: void
  *------------------------------------------------------*/
 template <typename T> 
-Matrix<T>::void Matrix(int n, int m)
+Matrix<T>::void Matrix(size_t n, size_t m)
 {
 	nRows = n; mCols = m;
 	matrix = new T*[nRows];
 
-	for (int i=0;i<nRows; i++)
+	for (size_t i=0;i<nRows; i++)
 		matrix[i] = new T[nCols];
 }
 
@@ -110,7 +110,7 @@ Matrix<T>::Matrix<T>& Inverse()
 }
 
 template <typename T> 
-Matrix<T>::int Rank()
+Matrix<T>::size_t Rank()
 {
 
 
@@ -124,14 +124,14 @@ Matrix<T>::T Determinant()
 }
 
 template <typename T> 
-Matrix<T>::vector<T> GetRow(int row)
+Matrix<T>::vector<T> GetRow(size_t row)
 {
 
 
 }
 
 template <typename T> 
-Matrix<T>::vector<T> GetCol(int col)
+Matrix<T>::vector<T> GetCol(size_t col)
 {
 
 
