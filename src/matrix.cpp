@@ -18,7 +18,7 @@
 
 
 /*------------------------------------------------------
- * Matrix -- init function of the Matrix Class
+ * Matrix -- constructor for the Matrix Class
  * Args: size_t nRows, size_t  mCols
  * Returns: void
  *------------------------------------------------------*/
