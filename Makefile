@@ -1,12 +1,36 @@
+# This is the Makefile for the lprog project
+
+SHELL=/bin/sh
 
 # set all Warnings and switch on debug
 CC=g++ -Wall -Iinclude -g
 
-all: matrixLibs
+# set VPATH so that we can refer to dependencies
+# in a more natural manner
+VPATH=src:include:obj
 
-matrixLibs: src/matrix.cpp include/matrix.h include/exceptions.h
+
+all: makeReqdDirs matrixLibs
+
+
+makeReqdDirs:
+# This is to be replaced by an if clause later in time
+# to ensure compatibility across various *NIX machines
+# mkdir -p creates directory if not present
+# and throws no error in case it is present
+	mkdir -p bin
+	mkdir -p data
+	mkdir -p obj
+
+
+matrixLibs: matrix.cpp matrix.h exceptions.h
 	$(CC) -c src/matrix.cpp -o obj/matrix.o
 	$(CC) obj/matrix.o -o bin/matrixLib
 
+
+
 clean:
-	rm -rf *~ *.o bin/*
+	rm -rf *~ *.o 
+	rm -rf bin
+	rm -rf obj
+	rmdir --ignore-fail-on-non-empty data
