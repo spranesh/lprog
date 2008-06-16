@@ -296,7 +296,65 @@ bool Matrix<T>::operator!=(const Matrix<T> &Other)
 
 template <typename T> 
 Matrix<T>& Matrix<T>::RowEchelon()
-{
+{	// This function was coded based on the pseudo code given at 
+	// http://en.wikipedia.org/wiki/Hermite_normal_form#Pseudocode
+	// Please check URL for further clarification
+
+	Matrix<T> copy(nRows, mCols);
+	copy = *this;
+
+	size_t lead = 0;
+	size_t rowCount = copy.nRows;
+	size_t columnCount = copy.mCols;
+
+	for(size_t r=0;r<rowCount;++r)
+	{
+		if(columnCount<=lead)
+			break;
+		size_t i=r;
+		while(copy.matrix[i][lead]==0)
+		{
+			++i;
+			if(rowCount == i)
+			{
+				i=r;
+				++lead;
+				if(columnCount == lead)
+					break;
+			}
+		}
+
+		//swap rows i and r 
+		for(size_t j=0;j<columnCount; ++j)
+		{
+			T temp;
+			temp = copy.matrix[i][j];
+			copy.matrix[i][j]=copy.matrix[r][j];
+			copy.matrix[r][j]=temp;
+		}
+
+		//Divide row r by copy[r][lead]
+		for(size_t j=0; j<columnCount; ++j)
+		{
+			if(copy.matrix[r][lead]!=0)
+				copy.matrix[r][j]/=copy.matrix[r][lead];
+		}
+
+		//FOR all rows j, from 0 to number of rows, every row except r
+		//Subtract copy[j][lead] multiplied by row r from row j 
+		//END FOR
+		for(size_t j=0; j<rowCount; ++j)
+		{
+			if(j!=r)
+				for(size_t k=0; k<columnCount; ++k)
+					copy.matrix[j][k]-=copy.matrix[j][lead]*copy.matrix[r][k];
+		}
+
+		++lead;
+	}
+
+	return copy;
+
 
 
 }

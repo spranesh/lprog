@@ -377,6 +377,7 @@ Matrix<T> Matrix<T>::RowEchelon( )
 	// This function was coded based on the pseudo code given at 
 	// http://en.wikipedia.org/wiki/Hermite_normal_form#Pseudocode
 	// Please check URL for further clarification
+	bool STOP = false;
 
 	Matrix<T> copy(nRows, mCols);
 	copy = *this;
@@ -388,7 +389,14 @@ Matrix<T> Matrix<T>::RowEchelon( )
 	for(size_t r=0;r<rowCount;++r)
 	{
 		if(columnCount<=lead)
+		{
+			//Following line for debugging only
+			//cout<<"Stopping at condition 1";
+			bool STOP = true;
+		}
+		if(STOP)
 			break;
+
 		size_t i=r;
 		while(copy.matrix[i][lead]==0)
 		{
@@ -398,10 +406,16 @@ Matrix<T> Matrix<T>::RowEchelon( )
 				i=r;
 				++lead;
 				if(columnCount == lead)
-					break;
+				{	
+					//Following line for debugging only
+					//cout<<"Stopping at condition 2";
+					STOP = true;
+				}
 			}
 		}
 
+		if(STOP)
+			break;
 		//swap rows i and r 
 		for(size_t j=0;j<columnCount; ++j)
 		{
