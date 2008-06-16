@@ -1,4 +1,6 @@
 # This is the Makefile for the lprog project
+# ToDo : Add command line support
+# :P
 
 SHELL=/bin/sh
 
@@ -11,6 +13,12 @@ VPATH=src:include:obj
 
 
 all: makeReqdDirs matrixLibs
+
+#md = matrix driver
+md: md.cpp matrix.cpp matrix.h exceptions.h
+	$(CC) -c src/matrix.cpp -o obj/matrix.o
+	$(CC) -c src/md.cpp -o obj/md.o
+	$(CC) obj/md.o obj/matrix.o -o bin/md
 
 
 makeReqdDirs:

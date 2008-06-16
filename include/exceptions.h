@@ -20,7 +20,7 @@ using namespace std;
 
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
-// The following exception is raised when two incomaptible matrices are asked to be multiplied
+// The following exception is raised when two incomaptible matrices are asked to be multiplied,
 // added or subtracted. 
 class IncompatibleMatricesException : public runtime_error
 {
