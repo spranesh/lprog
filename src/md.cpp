@@ -60,7 +60,7 @@ int main()
 		cout<<"\n";
 	}
 	
-
+	cout<<myMatrix2.Rank()<<"\n";
 	return 0;
 }
 

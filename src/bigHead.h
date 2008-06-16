@@ -25,8 +25,6 @@ using namespace std;
 template <typename T>
 class Matrix
 {
-	
-
 	public:
 		// We define as a double dimensional array. This should
 		// speed up things quite a lot
@@ -457,12 +455,12 @@ Matrix<T>& Matrix<T>::Inverse()
 
 }
 
-template <typename T> 
 /*------------------------------------------------------
  * Matrix<T>::Rank -- Returns the rank of the Matrix
  * Args: None 
  * Returns: size_t
  *------------------------------------------------------*/
+template <typename T> 
 size_t Matrix<T>::Rank( )
 {
 	//Converts the given matrix to a RowEchelon form
@@ -470,13 +468,10 @@ size_t Matrix<T>::Rank( )
 	size_t i, j;
 	size_t rank;
 
-	Matrix tempMatrix;
-	tempMatrix = *this;
-
-	tempMatrix.RowEchelon();
-	bool isRowEmpty = true;
+	Matrix<T> tempMatrix = (*this).RowEchelon();
 	for(i=0;i<tempMatrix.nRows; ++i)
 	{
+		bool isRowEmpty = true;
 		for(j=0;j<tempMatrix.mCols; ++j)
 		{
 			if(tempMatrix.matrix[i][j]!=0)
