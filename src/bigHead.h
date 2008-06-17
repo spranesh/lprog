@@ -244,6 +244,8 @@ Matrix<T>& Matrix<T>::operator=(Matrix<T> &Other)
 				matrix[i][j] = Other(i,j);
 	}
 
+	ClearValidity();
+
 	return *this;
 }
 
@@ -268,6 +270,8 @@ Matrix<T>& Matrix<T>::operator+=(Matrix<T> &Other)
 			for(j=0;j<mCols;j++)
 				matrix[i][j] += Other(i,j);
 	}
+
+	ClearValidity();
 
 	return *this;
 }
@@ -294,6 +298,8 @@ Matrix<T>& Matrix<T>::operator-=(Matrix<T> &Other)
 	}
 
 	
+	ClearValidity();
+
 	return *this;
 }
 
@@ -315,6 +321,9 @@ Matrix<T>& Matrix<T>::operator*=(Matrix<T> &Other)
 	// have for whatever reason, a chain of assignments
 	// and thereby sticking to the C rule of every statement
 	// evaluating to something.
+	
+	ClearValidity();
+
 	return *this;
 }
 
@@ -422,6 +431,9 @@ T & Matrix<T>::operator() (size_t row, size_t col)
 {
 	if (row >= nRows || col >= mCols)
 		throw IncompatibleMatricesException();
+
+	ClearValidity();
+
 	return matrix[row][col];
 }
  
@@ -529,6 +541,8 @@ bool Matrix<T>::ExchangeRows(size_t i, size_t j)
 	matrix[i] = matrix[j];
 	matrix[j] = temp;
 
+	ClearValidity();
+
 	return true;
 }
 	
@@ -547,6 +561,8 @@ bool Matrix<T>::ExchangeCols(size_t i, size_t j)
 		matrix[t][i] = matrix[t][j];
 		matrix[t][j] = temp;
 	}
+
+	ClearValidity();
 
 	return true;
 }
