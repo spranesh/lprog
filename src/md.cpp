@@ -69,6 +69,8 @@ int main()
 	}
 	
 	//cout<<myMatrix2.Rank()<<"\n";
+	cin>>myMatrix(0,0);
+	cout<<myMatrix(0,0);
 	return 0;
 }
 

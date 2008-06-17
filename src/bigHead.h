@@ -379,13 +379,13 @@ Matrix<T> Matrix<T>::operator*(Matrix<T> &Other) const
 
 
 
-template<typename T>
 /*------------------------------------------------------
  *  -- 
  * Args: size_t row, size_t col
  * Returns: T & 
  * Throws: IncompatibleMatricesException
  *------------------------------------------------------*/
+template<typename T>
 T & Matrix<T>::operator() (size_t row, size_t col)
 {
 	if (row >= nRows || col >= mCols)
@@ -393,13 +393,13 @@ T & Matrix<T>::operator() (size_t row, size_t col)
 	return matrix[row][col];
 }
  
-template<typename T>
 /*------------------------------------------------------
  *  -- 
  * Args:size_t row, size_t col
  * Returns: T 
  * Throws: IncompatibleMatricesException
  *------------------------------------------------------*/
+template<typename T>
 T Matrix<T>::operator() (size_t row, size_t col) const
 {
 	if (row >= nRows || col >= mCols)
