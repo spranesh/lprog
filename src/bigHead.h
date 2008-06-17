@@ -57,6 +57,11 @@ class Matrix
 		Matrix<T> operator-(Matrix<T> &Other) const;
 		Matrix<T> operator*(Matrix<T> &Other) const;
 
+		// We declare the subscript overloads
+		T& operator() (size_t row, size_t col);
+		T operator() (size_t row, size_t col) const;
+
+
 		// Now declare the comparison operations
 		bool operator==(Matrix<T> &Other);
 		bool operator!=(Matrix<T> &Other);
@@ -370,6 +375,37 @@ Matrix<T> Matrix<T>::operator*(Matrix<T> &Other) const
 
 	return returnMatrix;
 }
+
+
+
+
+template<typename T>
+/*------------------------------------------------------
+ *  -- 
+ * Args: size_t row, size_t col
+ * Returns: T & 
+ * Throws: IncompatibleMatricesException
+ *------------------------------------------------------*/
+T & Matrix<T>::operator() (size_t row, size_t col)
+{
+	if (row >= nRows || col >= mCols)
+		throw IncompatibleMatricesException();
+	return matrix[row][col];
+}
+ 
+template<typename T>
+/*------------------------------------------------------
+ *  -- 
+ * Args:size_t row, size_t col
+ * Returns: T 
+ * Throws: IncompatibleMatricesException
+ *------------------------------------------------------*/
+T Matrix<T>::operator() (size_t row, size_t col) const
+{
+	if (row >= nRows || col >= mCols)
+		throw IncompatibleMatricesException();
+	return matrix[row][col];
+} 
 
 /*------------------------------------------------------
  * operator== -- overloads the equality operator
