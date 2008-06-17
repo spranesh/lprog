@@ -22,7 +22,9 @@
 using namespace std;
 
 #define SMALL 0.00000001
+#define ABS(X) ((X<0)?(-X):(X))
 typedef double detType;
+
 
 template <typename T>
 class Matrix
@@ -85,9 +87,9 @@ class Matrix
 		detType Determinant();
 		size_t Rank();
 		Matrix<T> RowEchelon();
+		Matrix<T> ReducedRowEchelon();
 
 		void Print();
-
 
 	private:
 		size_t nRows;
@@ -502,6 +504,79 @@ bool Matrix<T>::ExchangeCols(size_t i, size_t j)
 	return true;
 }
 
+/*----------------------------------------------------------------------------
+ * Matrix<T>::ReducedRowEchelon -- Returns the RowEchelon form of the calling Matrix
+ * Args: None 
+ * Returns: Matrix<T>&
+ *---------------------------------------------------------------------------*/
+template <typename T> 
+Matrix<T> Matrix<T>::ReducedRowEchelon( )
+{
+	// This function was coded based on the pseudo code given at 
+	// http://en.wikipedia.org/wiki/Hermite_normal_form#Pseudocode
+	// Please check URL for further clarification
+	Matrix<T> copy(nRows, mCols);
+	copy = *this;
+
+	size_t lead = 0;
+	const size_t rowCount = copy.nRows;
+	const size_t columnCount = copy.mCols;
+
+	size_t i,r;
+	for(r=0;r<rowCount;++r)
+	{
+		if(columnCount<=lead)
+		{
+			//Following line for debugging only
+			//cout<<"Stopping at condition 1";
+			return copy;
+		}
+
+		i=r;
+		while(copy.matrix[i][lead]==0)
+		{
+			++i;
+			if(rowCount == i)
+			{
+				i=r;
+				++lead;
+				if(columnCount == lead)
+				{	
+					//Following line for debugging only
+					//cout<<"Stopping at condition 2";
+					return copy;
+				}
+			}
+		}
+
+		//swap rows i and r 
+		ExchangeRows(i, r);
+
+		T divider = copy.matrix[r][lead];
+		//Divide row r by copy[r][lead]
+		for(size_t j=0; j<columnCount; ++j)
+		{
+			copy.matrix[r][j]/=divider;
+		}
+
+		//FOR all rows j, from 0 to number of rows, every row except r
+		//Subtract copy[j][lead] multiplied by row r from row j 
+		//END FOR
+		for(size_t j=0; j<rowCount; ++j)
+		{
+			if(j!=r)
+			{
+				T multiplier = copy.matrix[j][lead];
+				for(size_t k=0; k<columnCount; ++k)
+					copy.matrix[j][k]-=multiplier*copy.matrix[r][k];
+			}
+		}
+
+		++lead;
+	}
+
+	return copy;
+}
 
 /*------------------------------------------------------
  * Matrix<T>::Inverse -- 
@@ -517,6 +592,7 @@ Matrix<T> Matrix<T>::Inverse( )
 
 
 }
+
 
 /*------------------------------------------------------
  * Matrix<T>::Determinant -- 
@@ -573,7 +649,7 @@ Matrix<T> Matrix<T>::RowEchelon( )
 				mx = R.matrix[l][j];
 				t = l;
 			}
-		cout << "("<<mx<<","<<t<<")"<<"max and t\n";
+		//cout << "("<<mx<<","<<t<<")"<<"max and t\n";
 
 
 		if(mx==0) continue;
@@ -585,17 +661,17 @@ Matrix<T> Matrix<T>::RowEchelon( )
 		for(l=i+1; l<nRows; l++)
 		{
 			factor = R.matrix[l][j]/(detType)(R.matrix[i][j]);
-			cout << "("<<i<<","<<l<<")"<<factor;
-			cout << "\n";
+			//cout << "("<<i<<","<<l<<")"<<factor;
+			//cout << "\n";
 			R.matrix[l][j] = 0;
 
 			for(k=j+1; k<mCols;k++)
 				R.matrix[l][k] -= (T) (R.matrix[i][k] * factor);
 		}
 
-		cout<<"After "<< i << "th row \n";
-		R.Print();
-		cout <<"\n\n";
+		//cout<<"After "<< i << "th row \n";
+		//R.Print();
+		//cout <<"\n\n";
 		i+=1;
 	}
 
