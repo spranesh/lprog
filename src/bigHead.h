@@ -23,10 +23,6 @@ using namespace std;
 
 typedef double detType;
 
-
-//deleted abs
-
-
 template <typename T>
 class Matrix
 {
