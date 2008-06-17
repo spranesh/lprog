@@ -51,16 +51,15 @@ int main()
 	//myMatrix *= myMatrix2;
 	
 
-	//Matrix<float> myMatrix2 = myMatrix.RowEchelon();
-	
+	Matrix<float> myMatrix2 = myMatrix.ReducedRowEchelon();
 
 	//cout<<myMatrix.matrix[0]<<'\n';
-	myMatrix.ExchangeCols(0,1);
+	//myMatrix.ExchangeCols(0,1);
 
 	for(i=0;i<row;i++)
 	{
 		for(j=0;j<col;j++)
-			cout << myMatrix.matrix[i][j]<<"\t";
+			cout << myMatrix2.matrix[i][j]<<"\t";
 		cout<<"\n";
 	}
 	

@@ -87,7 +87,7 @@ class Matrix
 		detType Determinant();
 		size_t Rank();
 		Matrix<T> RowEchelon();
-
+		Matrix<T> ReducedRowEchelon();
 
 	private:
 		size_t nRows;
@@ -381,19 +381,19 @@ bool Matrix<T>::operator!=(Matrix<T> &Other)
 
 
 
-template <typename T> 
-Matrix<T>& Matrix<T>::Inverse()
-{
+//template <typename T> 
+//Matrix<T>& Matrix<T>::Inverse()
+//{
+//
+//
+//}
 
-
-}
-
-template <typename T> 
-T Matrix<T>::Determinant()
-{
-
-
-}
+//template <typename T> 
+//T Matrix<T>::Determinant()
+//{
+//
+//
+//}
 
 template <typename T>
 /*------------------------------------------------------
@@ -493,6 +493,79 @@ bool Matrix<T>::ExchangeCols(size_t i, size_t j)
 	return true;
 }
 
+/*----------------------------------------------------------------------------
+ * Matrix<T>::ReducedRowEchelon -- Returns the RowEchelon form of the calling Matrix
+ * Args: None 
+ * Returns: Matrix<T>&
+ *---------------------------------------------------------------------------*/
+template <typename T> 
+Matrix<T> Matrix<T>::ReducedRowEchelon( )
+{
+	// This function was coded based on the pseudo code given at 
+	// http://en.wikipedia.org/wiki/Hermite_normal_form#Pseudocode
+	// Please check URL for further clarification
+	Matrix<T> copy(nRows, mCols);
+	copy = *this;
+
+	size_t lead = 0;
+	const size_t rowCount = copy.nRows;
+	const size_t columnCount = copy.mCols;
+
+	size_t i,r;
+	for(r=0;r<rowCount;++r)
+	{
+		if(columnCount<=lead)
+		{
+			//Following line for debugging only
+			//cout<<"Stopping at condition 1";
+			return copy;
+		}
+
+		i=r;
+		while(copy.matrix[i][lead]==0)
+		{
+			++i;
+			if(rowCount == i)
+			{
+				i=r;
+				++lead;
+				if(columnCount == lead)
+				{	
+					//Following line for debugging only
+					//cout<<"Stopping at condition 2";
+					return copy;
+				}
+			}
+		}
+
+		//swap rows i and r 
+		ExchangeRows(i, r);
+
+		T divider = copy.matrix[r][lead];
+		//Divide row r by copy[r][lead]
+		for(size_t j=0; j<columnCount; ++j)
+		{
+			copy.matrix[r][j]/=divider;
+		}
+
+		//FOR all rows j, from 0 to number of rows, every row except r
+		//Subtract copy[j][lead] multiplied by row r from row j 
+		//END FOR
+		for(size_t j=0; j<rowCount; ++j)
+		{
+			if(j!=r)
+			{
+				T multiplier = copy.matrix[j][lead];
+				for(size_t k=0; k<columnCount; ++k)
+					copy.matrix[j][k]-=multiplier*copy.matrix[r][k];
+			}
+		}
+
+		++lead;
+	}
+
+	return copy;
+}
 
 /*------------------------------------------------------
  * Matrix<T>::Inverse -- 
@@ -508,6 +581,8 @@ Matrix<T> Matrix<T>::Inverse( )
 
 
 }
+
+
 
 /*------------------------------------------------------
  * Matrix<T>::Determinant -- 
