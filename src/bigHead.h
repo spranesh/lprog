@@ -22,6 +22,21 @@
 using namespace std;
 
 
+template<typename T>
+/*------------------------------------------------------
+ * abs -- Returns absolute value 
+ * Args: T x
+ * Returns: T
+ *------------------------------------------------------*/
+T abs(T x)
+{
+	if (x<0)
+		return -x;
+	return x;
+}
+
+
+
 template <typename T>
 class Matrix
 {
@@ -63,9 +78,15 @@ class Matrix
 		Matrix<T>& Inverse();
 		size_t Rank();
 		T Determinant();
+		Matrix<T> GaussianElimination();
 		
 		vector<T> GetRow(size_t row);
 		vector<T> GetCol(size_t col);
+
+		bool ExchangeRows(size_t i, size_t j);
+		bool ExchangeCols(size_t i, size_t j);
+
+
 
 
 		// What follows next is absolutely Crazy stuff.
@@ -498,6 +519,25 @@ T Matrix<T>::Determinant()
 
 }
 
+template <typename T>
+/*------------------------------------------------------
+ * Matrix<T>::GaussianElimination -- 
+ * Args:  
+ * Returns: Matrix<T>
+ * Throws:
+ * See:
+ * Bugs:
+ *------------------------------------------------------*/
+Matrix<T> Matrix<T>::GaussianElimination( )
+{
+
+	Matrix<T> copy(nRows, mCols);
+	copy = *this;
+
+	return copy;
+
+}
+
 
 
 /*------------------------------------------------------
@@ -535,6 +575,47 @@ vector<T> Matrix<T>::GetCol(size_t col)
 }
 
 
+
+
+/*------------------------------------------------------
+ * Matrix<T>::ExchangeRows -- 
+ * Args: int i, int j
+ * Returns: bool
+ *------------------------------------------------------*/
+template<typename T>
+bool Matrix<T>::ExchangeRows(size_t i, size_t j)
+{
+	if(i>=nRows || j>=nRows )
+		return false;
+	if(i==j)
+		return true;
+	T *temp;
+
+	temp = matrix[i];
+	matrix[i] = matrix[j];
+	matrix[j] = temp;
+
+	return true;
+}
+	
+template<typename T>
+bool Matrix<T>::ExchangeCols(size_t i, size_t j)
+{
+	if(i>=mCols || j>=mCols )
+		return false;
+	if(i==j)
+		return true;
+	T temp;
+	int t;
+	for(t=0;t<nRows;t++)
+	{
+		temp = matrix[t][i];
+		matrix[t][i] = matrix[t][j];
+		matrix[t][j] = temp;
+	}
+
+	return true;
+}
 
 /*------------------------------------------------------
  * &operator<< -- overloading the << operator
