@@ -21,8 +21,8 @@
 #include <iomanip>
 using namespace std;
 
-#define SMALL 0.00000001
-#define ABS(X) ((X<0)?(-X):(X))
+#define SMALL 0.00001
+#define ABS(X) ((X) < 0 ? -(X) : (X))
 typedef double detType;
 
 
@@ -103,7 +103,9 @@ class Matrix
 
 		detType det;
 		size_t rank;
-		
+
+		bool rankValid, detValid;
+		void ClearValidity();
 };
 
 // A function to tell how ostream should deal with a matrix
@@ -121,7 +123,6 @@ class IncompatibleMatricesException : public runtime_error
 /*------------------------------------------------------
  * Matrix -- constructor for the Matrix Class
  * Args: size_t nRows, size_t  mCols
- * Returns: void
  *------------------------------------------------------*/
 template <typename T> 
 Matrix<T>::Matrix(size_t n, size_t m)
@@ -133,7 +134,12 @@ Matrix<T>::Matrix(size_t n, size_t m)
 		matrix[i] = new T[mCols];
 }
 
+
 template <typename T>
+/*------------------------------------------------------
+ * Matrix -- constructor for the Matrix Class
+ * Args: const Matrix<T> &Other
+ *------------------------------------------------------*/
 Matrix<T>::Matrix(const Matrix<T> &Other)
 {
 	nRows = Other.nRows;
@@ -146,6 +152,17 @@ Matrix<T>::Matrix(const Matrix<T> &Other)
 	for(size_t i=0;i<nRows; ++i)
 		for(size_t j=0;j<mCols; ++j)
 			matrix[i][j]=Other.matrix[i][j];
+}
+template <typename T>
+/*------------------------------------------------------
+ * Matrix<T>::ClearValidity() - clears validity of cache
+ * Returns: void
+ *------------------------------------------------------*/
+void Matrix<T>::ClearValidity()
+{
+	rankValid = detValid = false;
+	rank = 0;
+	det = 0;
 }
 
 /*------------------------------------------------------
@@ -602,7 +619,7 @@ Matrix<T> Matrix<T>::ReducedRowEchelon( )
 		}
 
 		//swap rows i and r 
-		ExchangeRows(i, r);
+		copy.ExchangeRows(i, r);
 
 		T divider = copy.matrix[r][lead];
 		//Divide row r by copy[r][lead]
@@ -631,17 +648,108 @@ Matrix<T> Matrix<T>::ReducedRowEchelon( )
 }
 
 /*------------------------------------------------------
- * Matrix<T>::Inverse -- 
+ * Matrix<T>::Inverse -- Returns inverse of matrix if possible
  * Args:  
  * Returns: Matrix<T>
  *------------------------------------------------------*/
 template<typename T>
 Matrix<T> Matrix<T>::Inverse( )
 {
+	Matrix<T> R(nRows, mCols);
+	Matrix<T> I(nRows, mCols);
+	Matrix<T> Zero(nRows, mCols);
+	size_t i=0, j, k, l, t;
+	T mx;
+	detType factor;
+	detType d = 1.0;
+
+	// Inverting a Matrix
+	// Breif Description of the Algorithm :
+	// Run through columns 1 to mCols-1 using var j
+	// start with i=0. For each col find the maximum 
+	// absolute element, below i, mx, at position t.
+	// if mx == 0 continue
+	// else swap the t and i row, using the swap function.
+	// for l in j -> nRows
+	//   factor = (l,j)/(j,j) 
+	//   for k in 0 -> mCols
+	//      if l != j
+	//   	(l,k) -= (i,j) * factor
+	// continue
+	
+	R = *this;
+	
+	if(nRows!=mCols)
+	{
+		det = 0.0;
+		throw IncompatibleMatricesException();
+	}
+		
+
+	for(i=0;i<nRows;i++)
+		for(j=0;j<nRows;j++)
+		{
+			I(i,j) = (i==j)? 1 : 0;
+			Zero(i,j) = 0;
+		}
+
+	for(j=0;j<mCols;j++)
+	{
+		mx = ABS(R(j,j));
+		t = j;
+		for(l=j+1;l<mCols;l++)
+			if(ABS(R(l,j)) > mx)
+			{ 
+				mx = R(l,j);
+				t = l;
+			}
+		//cout << "("<<mx<<","<<t<<")"<<"max and t\n";
 
 
+		if(mx<SMALL) 
+		{
+			cout << "Matrix is Singular\n";
+			det = 0.0;
+			return Zero;
+		}
+		
+		R.ExchangeRows(j,t);
+		I.ExchangeRows(j,t);
+
+		for(l=0; l<mCols; l++)
+		{
+			factor = R(l,j)/(detType)(R(j,j));
+			//cout << "("<<i<<","<<l<<")"<<factor;
+			//cout << "\n";
+			if(l!=j)
+				for(k=0; k<mCols;k++)
+				{
+						// row l -> row l - row j*( l,j/j,j )
+						R(l,k) -= (T) (R(j,k) * factor);
+						I(l,k) -= (T) (I(j,k) * factor);
+				}
+			
+		}
+
+		for(k=0;k<mCols;k++)
+		{
+			R(j,k)/=mx;
+			I(j,k)/=mx;
+		}
+		d *= mx;
 
 
+		cout << "j : "<<j<<"\n";
+		cout << "R : \n";
+		R.Print();
+		cout << "I : \n";
+		I.Print();
+	}
+	detValid = true;
+	det = d;
+	cout << d;
+
+	return I;
 
 }
 
@@ -654,10 +762,14 @@ Matrix<T> Matrix<T>::Inverse( )
 template<typename T>
 detType Matrix<T>::Determinant( )
 {
+	if (detValid)
+		return det;
 
-
-
-
+	else
+	{
+		Inverse();
+		return det;
+	}
 }
 
 
@@ -674,6 +786,7 @@ Matrix<T> Matrix<T>::RowEchelon( )
 	size_t i=0, j, k, l, t;
 	T mx;
 	detType factor;
+	bool isRowEmpty;
 
 	// Breif Description of the Algorithm :
 	// Run through columns 1 to mCols-1 using var j
@@ -704,7 +817,7 @@ Matrix<T> Matrix<T>::RowEchelon( )
 		//cout << "("<<mx<<","<<t<<")"<<"max and t\n";
 
 
-		if(mx==0) continue;
+		if(mx<SMALL) continue;
 		
 		// Else
 		if(i!=t) 
@@ -727,7 +840,27 @@ Matrix<T> Matrix<T>::RowEchelon( )
 		i+=1;
 	}
 
+	
+
 	//we also compute the rank as a side effect
+	for(i=0;i<nRows; ++i)
+	{
+		isRowEmpty = true;
+		for(j=0;j<mCols; ++j)
+		{
+			if(ABS( (*this)(i,j) ) < SMALL)
+			{
+				isRowEmpty = false;
+				break;
+			}
+		}
+
+		if(isRowEmpty == true)
+			break;
+	}
+
+	rank = i;
+	rankValid = true;
 
 	return R;
 
@@ -741,26 +874,14 @@ Matrix<T> Matrix<T>::RowEchelon( )
 template<typename T>
 size_t Matrix<T>::Rank( )
 {
-	bool isRowEmpty;
-	size_t rank;
-	size_t i, j;
+	if(rankValid)
+		return rank;
 
-	for(i=0;i<nRows; ++i)
+	else
 	{
-		isRowEmpty = true;
-		for(j=0;j<mCols; ++j)
-		{
-			if((*this).matrix[i][j]!=0)
-				isRowEmpty = false;
-		}
-
-		if(isRowEmpty == true)
-			break;
+		RowEchelon();
+		return rank;
 	}
-
-	rank = i;
-	return rank;
-
 }
 
 

@@ -29,49 +29,44 @@ int main()
 		for(j=0;j<col;j++)
 			cin >> myMatrix.matrix[i][j];
 
-//	cin >> row>> col;
-//
-//	Matrix<float> myMatrix2(row, col);
-//	for(i=0;i<row;i++)
-//		for(j=0;j<col;j++)
-//			cin >> myMatrix2.matrix[i][j];
-//
-	//works
-	//cout << myMatrix.GetNumRows() <<"\t"<< myMatrix.GetNumCols();
-	//cout << "\n";
-	
-	//works
-	//if (myMatrix != myMatrix2)	cout<<"True";
-	//else cout << "False";
-	
-	//=, +, -, *  works
-	//Matrix<float> newMatrix = myMatrix - myMatrix2;
-	
-	//=, *=, += all work
-	//myMatrix *= myMatrix2;
-	
-	//Matrix<float> myMatrix2 = myMatrix.RowEchelon();
-	//cout<<myMatrix.matrix[0]<<'\n';
-	
-	//RowEchelon works
-	//Matrix<float> RE = myMatrix.RowEchelon();
+	// cin >> row>> col;
 
-	//ReducedRowEchelon works
-	//Matrix<float> myMatrix2 = myMatrix.ReducedRowEchelon();
+	// Matrix<float> myMatrix2(row, col);
+	// for(i=0;i<row;i++)
+	// 	for(j=0;j<col;j++)
+	// 		cin >> myMatrix2.matrix[i][j];
 
-
-	//cout<<myMatrix.matrix[0]<<'\n';
-	//myMatrix.ExchangeCols(0,1);
-
-	Matrix<float> myMatrix2(myMatrix.ReducedRowEchelon());
-
-	for(i=0;i<row;i++)
-	{
-		for(j=0;j<col;j++)
-			cout << myMatrix2.matrix[i][j]<<"\t";
-		cout<<"\n";
-	}
+	// //works
+	// cout << myMatrix.GetNumRows() <<"\t"<< myMatrix.GetNumCols();
+	// cout << "\n";
 	
+	// works
+	// if (myMatrix != myMatrix2)	cout<<"True";
+	// else cout << "False";
+	
+	// =, +, -, *  works
+	// Matrix<float> newMatrix = myMatrix - myMatrix2;
+	
+	// =, *=, += all work
+	// myMatrix *= myMatrix2;
+	
+	// Matrix<float> myMatrix2 = myMatrix.RowEchelon();
+	// cout<<myMatrix.matrix[0]<<'\n';
+	
+	// RowEchelon works
+	// Matrix<float> RE = myMatrix.RowEchelon();
+
+	// ReducedRowEchelon works
+	// Matrix<float> myMatrix2 = myMatrix.ReducedRowEchelon();
+
+
+	// cout<<myMatrix.matrix[0]<<'\n';
+	// myMatrix.ExchangeCols(0,1);
+
+	Matrix<float> myMatrix2(myMatrix.Inverse());
+
+	cout<<"\n\n";
+	myMatrix2.Print();
 	//cout<<myMatrix2.Rank()<<"\n";
 //	cin>>myMatrix(0,0);
 //	cout<<myMatrix(0,0);
