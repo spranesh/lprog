@@ -14,21 +14,18 @@
  * =====================================================================================
  */
 
-#include "matrix.h"
 
+#include<vector>
 #include <iostream>
-using std::cout;
-using std::cin;
-using std::endl;
-using std::ostream;
-
 #include <iomanip>
-using std::setw;
+#include "matrix.h"
+using namespace std;
+
+
 
 /*------------------------------------------------------
  * Matrix -- constructor for the Matrix Class
  * Args: size_t nRows, size_t  mCols
- * Returns: void
  *------------------------------------------------------*/
 template <typename T> 
 Matrix<T>::Matrix(size_t n, size_t m)
@@ -38,6 +35,38 @@ Matrix<T>::Matrix(size_t n, size_t m)
 
 	for (size_t i=0;i<nRows; i++)
 		matrix[i] = new T[mCols];
+}
+
+
+/*------------------------------------------------------
+ * Matrix -- constructor for the Matrix Class
+ * Args: const Matrix<T> &Other
+ *------------------------------------------------------*/
+template <typename T>
+Matrix<T>::Matrix(const Matrix<T> &Other)
+{
+	nRows = Other.nRows;
+	mCols = Other.mCols;
+
+	matrix = new T*[nRows];
+	for(size_t i=0;i<nRows; ++i)
+		matrix[i] = new T[mCols];
+
+	for(size_t i=0;i<nRows; ++i)
+		for(size_t j=0;j<mCols; ++j)
+			matrix[i][j]=Other(i,j);
+}
+
+/*------------------------------------------------------
+ * Matrix<T>::ClearValidity() - clears validity of cache
+ * Returns: void
+ *------------------------------------------------------*/
+template <typename T>
+void Matrix<T>::ClearValidity()
+{
+	rankValid = detValid = false;
+	rank = 0;
+	det = 0;
 }
 
 /*------------------------------------------------------
@@ -63,6 +92,30 @@ size_t Matrix<T>::GetNumCols()
 
 
 /*------------------------------------------------------
+ * Matrix<T>::Print -- Prints a matrix
+ * Args:  
+ * Returns: void
+ *------------------------------------------------------*/
+template <typename T>
+void Matrix<T>::Print()
+{
+	size_t i, j;
+
+	for(i=0;i<nRows;i++)
+	{
+		cout << setiosflags(ios::right);
+		cout << setiosflags(ios::fixed);
+		for(j=0;j<mCols;j++)
+			cout << setprecision(6)<<matrix[i][j]<<setw(15);
+
+		cout << "\n";
+	}
+
+}
+
+
+
+/*------------------------------------------------------
  * operator= -- overloads the = operator for matrices
  * Args: A constant reference to another Matrix, Other
  * Returns: reference to matrix of the same type
@@ -70,7 +123,7 @@ size_t Matrix<T>::GetNumCols()
  * Ensures no-self-assignment, and resizes matrix if necessary
  *------------------------------------------------------*/
 template <typename T>
-Matrix<T>& Matrix<T>::operator=(const Matrix<T> &Other)
+Matrix<T>& Matrix<T>::operator=(Matrix<T> &Other)
 {
 	size_t i, j;
 
@@ -93,8 +146,10 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T> &Other)
 
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols; j++)
-				matrix[i][j] = Other.matrix[i][j];
+				matrix[i][j] = Other(i,j);
 	}
+
+	ClearValidity();
 
 	return *this;
 }
@@ -107,7 +162,7 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T> &Other)
  * Returns: Matrix<T>&
  *------------------------------------------------------*/
 template <typename T> 
-Matrix<T>& Matrix<T>::operator+=(const Matrix<T> &Other)
+Matrix<T>& Matrix<T>::operator+=(Matrix<T> &Other)
 {
 	int i, j;
 
@@ -118,8 +173,10 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T> &Other)
 	{
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols;j++)
-				matrix[i][j] += Other.matrix[i][j];
+				matrix[i][j] += Other(i,j);
 	}
+
+	ClearValidity();
 
 	return *this;
 }
@@ -131,7 +188,7 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T> &Other)
  * Returns: Matrix<T>&
  *------------------------------------------------------*/
 template <typename T> 
-Matrix<T>& Matrix<T>::operator-=(const Matrix<T> &Other)
+Matrix<T>& Matrix<T>::operator-=(Matrix<T> &Other)
 {
 	int i, j;
 
@@ -142,10 +199,12 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix<T> &Other)
 	{
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols;j++)
-				matrix[i][j] -= Other.matrix[i][j];
+				matrix[i][j] -= Other(i,j);
 	}
 
 	
+	ClearValidity();
+
 	return *this;
 }
 
@@ -157,14 +216,19 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix<T> &Other)
  * Returns: Matrix<T>&
  *------------------------------------------------------*/
 template <typename T> 
-Matrix<T>& Matrix<T>::operator*=(const Matrix<T> &Other)
+Matrix<T>& Matrix<T>::operator*=(Matrix<T> &Other)
 {
-	*this = *this * Other;
+	Matrix<T> newThis = *this * Other;
+
+	*this = newThis;
 
 	// we return *this only to ensure that we can
 	// have for whatever reason, a chain of assignments
 	// and thereby sticking to the C rule of every statement
 	// evaluating to something.
+	
+	ClearValidity();
+
 	return *this;
 }
 
@@ -176,11 +240,11 @@ Matrix<T>& Matrix<T>::operator*=(const Matrix<T> &Other)
  * const in nature since *this is not changed
  *------------------------------------------------------*/
 template <typename T> 
-Matrix<T>& Matrix<T>::operator+(const Matrix<T> &Other) const
+Matrix<T> Matrix<T>::operator+(Matrix<T> &Other) const
 {
 
 	int i, j;
-	Matrix<T> returnMatrix (nRows, mCols);
+	static Matrix<T> returnMatrix (nRows, mCols);
 
 	if(nRows != Other.GetNumRows()||mCols != Other.GetNumCols())
 		throw IncompatibleMatricesException();
@@ -189,11 +253,11 @@ Matrix<T>& Matrix<T>::operator+(const Matrix<T> &Other) const
 	{
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols;j++)
-				returnMatrix.matrix[i][j] = 
-					matrix[i][j] + Other.matrix[i][j];
+				returnMatrix(i,j) = 
+					matrix[i][j] + Other(i,j);
 	}
 
-	return &returnMatrix;
+	return returnMatrix;
 }
 
 
@@ -205,7 +269,7 @@ Matrix<T>& Matrix<T>::operator+(const Matrix<T> &Other) const
  * const in nature since *this is not changed
  *------------------------------------------------------*/
 template <typename T> 
-Matrix<T>& Matrix<T>::operator-(const Matrix<T> &Other) const
+Matrix<T> Matrix<T>::operator-(Matrix<T> &Other) const
 {
 
 	int i, j;
@@ -218,11 +282,11 @@ Matrix<T>& Matrix<T>::operator-(const Matrix<T> &Other) const
 	{
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols;j++)
-				returnMatrix.matrix[i][j] = 
-					matrix[i][j] - Other.matrix[i][j];
+				returnMatrix(i,j) = 
+					matrix[i][j] - Other(i,j);
 	}
 
-	return &returnMatrix;
+	return returnMatrix;
 }
 
 
@@ -233,7 +297,7 @@ Matrix<T>& Matrix<T>::operator-(const Matrix<T> &Other) const
  * const in nature since *this is not changed
  *------------------------------------------------------*/
 template <typename T> 
-Matrix<T>& Matrix<T>::operator*(const Matrix<T> &Other) const
+Matrix<T> Matrix<T>::operator*(Matrix<T> &Other) const
 {
 	int i, j, k;
 	Matrix <T> returnMatrix (nRows, Other.GetNumCols());
@@ -247,16 +311,50 @@ Matrix<T>& Matrix<T>::operator*(const Matrix<T> &Other) const
 		for (i=0;i<nRows;i++)
 			for(j=0;j<Other.GetNumCols();j++)
 			{
-				returnMatrix[i][j]=0;
+				returnMatrix(i,j)=0;
 
 				for(k=0;k<mCols;k++)
-					returnMatrix[i][j] += 
-						matrix[i][k] * Other.matrix[k][j];
+					returnMatrix(i,j) += 
+						matrix[i][k] * Other(k,j);
 			}
 	}
 
-	return &returnMatrix;
+	return returnMatrix;
 }
+
+
+
+
+/*------------------------------------------------------
+ *  -- 
+ * Args: size_t row, size_t col
+ * Returns: T & 
+ * Throws: IncompatibleMatricesException
+ *------------------------------------------------------*/
+template<typename T>
+T & Matrix<T>::operator() (size_t row, size_t col)
+{
+	if (row >= nRows || col >= mCols)
+		throw IncompatibleMatricesException();
+
+	ClearValidity();
+
+	return matrix[row][col];
+}
+ 
+/*------------------------------------------------------
+ *  -- 
+ * Args:size_t row, size_t col
+ * Returns: T 
+ * Throws: IncompatibleMatricesException
+ *------------------------------------------------------*/
+template<typename T>
+T Matrix<T>::operator() (size_t row, size_t col) const
+{
+	if (row >= nRows || col >= mCols)
+		throw IncompatibleMatricesException();
+	return matrix[row][col];
+} 
 
 /*------------------------------------------------------
  * operator== -- overloads the equality operator
@@ -264,7 +362,7 @@ Matrix<T>& Matrix<T>::operator*(const Matrix<T> &Other) const
  * Returns: boolean value
  *------------------------------------------------------*/
 template <typename T> 
-bool Matrix<T>::operator==(const Matrix<T> &Other)
+bool Matrix<T>::operator==(Matrix<T> &Other)
 {
 	int i, j;
 
@@ -273,7 +371,7 @@ bool Matrix<T>::operator==(const Matrix<T> &Other)
 
 	for(i=0;i<nRows;i++)
 		for(j=0;j<mCols;j++)
-			if(matrix[i][j]!=Other.matrix[i][j])
+			if(matrix[i][j]!=Other(i,j))
 				return false;
 
 	return true;
@@ -287,106 +385,10 @@ template <typename T>
  * Returns: boolean value
  * uses the == operator
  *------------------------------------------------------*/
-bool Matrix<T>::operator!=(const Matrix<T> &Other)
+bool Matrix<T>::operator!=(Matrix<T> &Other)
 {
 	return !(*this == Other);
 }
-
-
-
-template <typename T> 
-Matrix<T>& Matrix<T>::RowEchelon()
-{	// This function was coded based on the pseudo code given at 
-	// http://en.wikipedia.org/wiki/Hermite_normal_form#Pseudocode
-	// Please check URL for further clarification
-
-	Matrix<T> copy(nRows, mCols);
-	copy = *this;
-
-	size_t lead = 0;
-	size_t rowCount = copy.nRows;
-	size_t columnCount = copy.mCols;
-
-	for(size_t r=0;r<rowCount;++r)
-	{
-		if(columnCount<=lead)
-			break;
-		size_t i=r;
-		while(copy.matrix[i][lead]==0)
-		{
-			++i;
-			if(rowCount == i)
-			{
-				i=r;
-				++lead;
-				if(columnCount == lead)
-					break;
-			}
-		}
-
-		//swap rows i and r 
-		for(size_t j=0;j<columnCount; ++j)
-		{
-			T temp;
-			temp = copy.matrix[i][j];
-			copy.matrix[i][j]=copy.matrix[r][j];
-			copy.matrix[r][j]=temp;
-		}
-
-		//Divide row r by copy[r][lead]
-		for(size_t j=0; j<columnCount; ++j)
-		{
-			if(copy.matrix[r][lead]!=0)
-				copy.matrix[r][j]/=copy.matrix[r][lead];
-		}
-
-		//FOR all rows j, from 0 to number of rows, every row except r
-		//Subtract copy[j][lead] multiplied by row r from row j 
-		//END FOR
-		for(size_t j=0; j<rowCount; ++j)
-		{
-			if(j!=r)
-				for(size_t k=0; k<columnCount; ++k)
-					copy.matrix[j][k]-=copy.matrix[j][lead]*copy.matrix[r][k];
-		}
-
-		++lead;
-	}
-
-	return copy;
-
-
-
-}
-
-
-
-template <typename T> 
-Matrix<T>& Matrix<T>::Inverse()
-{
-
-
-}
-
-
-
-template <typename T> 
-size_t Matrix<T>::Rank()
-{
-
-
-	return;
-}
-
-
-
-template <typename T> 
-T Matrix<T>::Determinant()
-{
-
-
-}
-
 
 
 /*------------------------------------------------------
@@ -425,22 +427,384 @@ vector<T> Matrix<T>::GetCol(size_t col)
 
 
 
+
+/*------------------------------------------------------
+ * Matrix<T>::ExchangeRows -- 
+ * Args: int i, int j
+ * Returns: bool
+ *------------------------------------------------------*/
+template<typename T>
+bool Matrix<T>::ExchangeRows(size_t i, size_t j)
+{
+	if(i>=nRows || j>=nRows )
+		return false;
+	if(i==j)
+		return true;
+	T *temp;
+
+	temp = matrix[i];
+	matrix[i] = matrix[j];
+	matrix[j] = temp;
+
+	ClearValidity();
+
+	return true;
+}
+	
+template<typename T>
+bool Matrix<T>::ExchangeCols(size_t i, size_t j)
+{
+	if(i>=mCols || j>=mCols )
+		return false;
+	if(i==j)
+		return true;
+	T temp;
+	int t;
+	for(t=0;t<nRows;t++)
+	{
+		temp = matrix[t][i];
+		matrix[t][i] = matrix[t][j];
+		matrix[t][j] = temp;
+	}
+
+	ClearValidity();
+
+	return true;
+}
+
+/*----------------------------------------------------------------------------
+ * Matrix<T>::ReducedRowEchelon -- Returns the RowEchelon form of the calling Matrix
+ * Args: None 
+ * Returns: Matrix<T>&
+ *---------------------------------------------------------------------------*/
+template <typename T> 
+Matrix<T> Matrix<T>::ReducedRowEchelon( )
+{
+	// This function was coded based on the pseudo code given at 
+	// http://en.wikipedia.org/wiki/Hermite_normal_form#Pseudocode
+	// Please check URL for further clarification
+	Matrix<T> copy(nRows, mCols);
+	copy = *this;
+
+	size_t lead = 0;
+	const size_t rowCount = copy.nRows;
+	const size_t columnCount = copy.mCols;
+
+	size_t i,r;
+	for(r=0;r<rowCount;++r)
+	{
+		if(columnCount<=lead)
+		{
+			//Following line for debugging only
+			//cout<<"Stopping at condition 1";
+			return copy;
+		}
+
+		i=r;
+		while(copy(i,lead)==0)
+		{
+			++i;
+			if(rowCount == i)
+			{
+				i=r;
+				++lead;
+				if(columnCount == lead)
+				{	
+					//Following line for debugging only
+					//cout<<"Stopping at condition 2";
+					return copy;
+				}
+			}
+		}
+
+		//swap rows i and r 
+		copy.ExchangeRows(i, r);
+
+		T divider = copy(r,lead);
+		//Divide row r by copy[r][lead]
+		for(size_t j=0; j<columnCount; ++j)
+		{
+			copy(r,j)/=divider;
+		}
+
+		//FOR all rows j, from 0 to number of rows, every row except r
+		//Subtract copy[j][lead] multiplied by row r from row j 
+		//END FOR
+		for(size_t j=0; j<rowCount; ++j)
+		{
+			if(j!=r)
+			{
+				T multiplier = copy(j,lead);
+				for(size_t k=0; k<columnCount; ++k)
+					copy(j,k)-=multiplier*copy(r,k);
+			}
+		}
+
+		++lead;
+	}
+
+	return copy;
+}
+
+/*------------------------------------------------------
+ * Matrix<T>::Inverse -- Returns inverse of matrix if possible
+ * Args:  
+ * Returns: Matrix<T>
+ *------------------------------------------------------*/
+template<typename T>
+Matrix<T> Matrix<T>::Inverse( )
+{
+	Matrix<T> R(nRows, mCols);
+	Matrix<T> I(nRows, mCols);
+	Matrix<T> Zero(nRows, mCols);
+	size_t i=0, j, k, l, t;
+	T mx;
+	detType factor;
+	detType d = 1.0;
+
+	// Inverting a Matrix
+	// Breif Description of the Algorithm :
+	// Run through columns 1 to mCols-1 using var j
+	// start with i=0. For each col find the maximum 
+	// absolute element, below i, mx, at position t.
+	// if mx == 0 continue
+	// else swap the t and i row, using the swap function.
+	// for l in j -> nRows
+	//   factor = (l,j)/(j,j) 
+	//   for k in 0 -> mCols
+	//      if l != j
+	//   	(l,k) -= (i,j) * factor
+	// continue
+	
+	R = *this;
+	
+	if(nRows!=mCols)
+	{
+		det = 0.0;
+		throw IncompatibleMatricesException();
+	}
+		
+
+	for(i=0;i<nRows;i++)
+		for(j=0;j<nRows;j++)
+		{
+			I(i,j) = (i==j)? 1 : 0;
+			Zero(i,j) = 0;
+		}
+
+	for(j=0;j<mCols;j++)
+	{
+		mx = ABS(R(j,j));
+		t = j;
+		for(l=j+1;l<mCols;l++)
+			if(ABS(R(l,j)) > mx)
+			{ 
+				mx = R(l,j);
+				t = l;
+			}
+		//cout << "("<<mx<<","<<t<<")"<<"max and t\n";
+
+
+		if(mx<SMALL) 
+		{
+			cout << "Matrix is Singular\n";
+			det = 0.0;
+			return Zero;
+		}
+		
+		R.ExchangeRows(j,t);
+		I.ExchangeRows(j,t);
+
+		for(l=0; l<mCols; l++)
+		{
+			factor = R(l,j)/(detType)(R(j,j));
+			//cout << "("<<i<<","<<l<<")"<<factor;
+			//cout << "\n";
+			if(l!=j)
+				for(k=0; k<mCols;k++)
+				{
+						// row l -> row l - row j*( l,j/j,j )
+						R(l,k) -= (T) (R(j,k) * factor);
+						I(l,k) -= (T) (I(j,k) * factor);
+				}
+			
+		}
+
+		for(k=0;k<mCols;k++)
+		{
+			R(j,k)/=mx;
+			I(j,k)/=mx;
+		}
+		d *= mx;
+
+
+		cout << "j : "<<j<<"\n";
+		cout << "R : \n";
+		R.Print();
+		cout << "I : \n";
+		I.Print();
+	}
+	detValid = true;
+	det = d;
+	cout << d;
+
+	return I;
+
+}
+
+
+/*------------------------------------------------------
+ * Matrix<T>::Determinant -- 
+ * Args:  
+ * Returns: detType
+ *------------------------------------------------------*/
+template<typename T>
+detType Matrix<T>::Determinant( )
+{
+	if (detValid)
+		return det;
+
+	else
+	{
+		Inverse();
+		return det;
+	}
+}
+
+
+/*------------------------------------------------------
+ * Matrix<T>::RowEchelon -- 
+ * Args:  
+ * Returns: Matrix<T>
+ *------------------------------------------------------*/
+template<typename T>
+Matrix<T> Matrix<T>::RowEchelon( )
+{
+	// we will return the RowEchelon Matrix to the user
+	Matrix<T> R(nRows, mCols);
+	size_t i=0, j, k, l, t;
+	T mx;
+	detType factor;
+	bool isRowEmpty;
+
+	// Breif Description of the Algorithm :
+	// Run through columns 1 to mCols-1 using var j
+	// start with i=0. For each col find the maximum 
+	// absolute element, below i, mx, at position t.
+	// if mx == 0 continue
+	// else swap the t and i row, using the swap function.
+	// for l in i+1 -> nRows
+	//   factor = (l,j)/(i,j) 
+	//   (l,j) = 0
+	//   for k in j+1 -> mCols
+	//   	(l,k) -= (i,j) * factor
+	// increment i
+	// continue
+	
+	R = *this;
+	
+
+	for(j=0;j<mCols-1 && i<nRows;j++)
+	{
+		mx = R(i,j);
+		t = i;
+		for(l=j+1;l<nRows;l++)
+			if(R(l,j) > mx){ 
+				mx = R(l,j);
+				t = l;
+			}
+		//cout << "("<<mx<<","<<t<<")"<<"max and t\n";
+
+
+		if(mx<SMALL) continue;
+		
+		// Else
+		if(i!=t) 
+			R.ExchangeRows(i, t);
+
+		for(l=i+1; l<nRows; l++)
+		{
+			factor = R(l,j)/(detType)(R(i,j));
+			//cout << "("<<i<<","<<l<<")"<<factor;
+			//cout << "\n";
+			R(l,j) = 0;
+
+			for(k=j+1; k<mCols;k++)
+				R(l,k) -= (T) (R(i,k) * factor);
+		}
+
+		//cout<<"After "<< i << "th row \n";
+		//R.Print();
+		//cout <<"\n\n";
+		i+=1;
+	}
+
+	
+
+	//we also compute the rank as a side effect
+	for(i=0;i<nRows; ++i)
+	{
+		isRowEmpty = true;
+		for(j=0;j<mCols; ++j)
+		{
+			if(ABS( (*this)(i,j) ) < SMALL)
+			{
+				isRowEmpty = false;
+				break;
+			}
+		}
+
+		if(isRowEmpty == true)
+			break;
+	}
+
+	rank = i;
+	rankValid = true;
+
+	return R;
+
+}
+
+/*------------------------------------------------------
+ * Matrix<T>::Rank -- 
+ * Args: None 
+ * Returns: size_t
+ *------------------------------------------------------*/
+template<typename T>
+size_t Matrix<T>::Rank( )
+{
+	if(rankValid)
+		return rank;
+
+	else
+	{
+		RowEchelon();
+		return rank;
+	}
+}
+
+
+
 /*------------------------------------------------------
  * &operator<< -- overloading the << operator
  * Args: ostream &output, const Matrix &Instance
  * Returns: ostream
  * Pretty Print
  *------------------------------------------------------*/
+/*
 template <typename T> 
 ostream& operator<<(ostream &output, const Matrix<T> &Instance)
 {
 	for (int i=0; i<Instance.GetNumRows(); i++)
 	{
 		for (int j=0; j<Instance.GetNumCols(); j++)
-			output << setw(5) << Instance.matrix[i][j];
+			output << setw(5) << Instance(i,j);
 		output << endl; 
 	}
 return output; 
 } 
+*/
+
+
 
 

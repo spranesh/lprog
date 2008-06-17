@@ -5,18 +5,17 @@
 SHELL=/bin/sh
 
 # set all Warnings and switch on debug
-CC=g++ -Wall -Iinclude -g
+CC=g++ -Wall -I include -g
 
 # set VPATH so that we can refer to dependencies
 # in a more natural manner
 VPATH=src:include:obj
 
 
-all: makeReqdDirs matrixLibs
+all: makeReqdDirs matrixLibs md
 
 #md = matrix driver
-md: md.cpp matrix.cpp matrix.h exceptions.h
-	$(CC) -c src/matrix.cpp -o obj/matrix.o
+md: md.cpp matrix.cpp matrix.h exceptions.h matrix.o
 	$(CC) -c src/md.cpp -o obj/md.o
 	$(CC) obj/md.o obj/matrix.o -o bin/md
 
@@ -33,8 +32,6 @@ makeReqdDirs:
 
 matrixLibs: matrix.cpp matrix.h exceptions.h
 	$(CC) -c src/matrix.cpp -o obj/matrix.o
-	$(CC) obj/matrix.o -o bin/matrixLib
-
 
 
 clean:
