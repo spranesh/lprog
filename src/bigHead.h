@@ -21,6 +21,8 @@
 #include <iomanip>
 using namespace std;
 
+typedef double detType;
+
 
 template<typename T>
 /*------------------------------------------------------
@@ -74,12 +76,7 @@ class Matrix
 
 
 		// Next we declare the usual Matrix Functions
-		Matrix<T> RowEchelon(); // Return another Matrix which is a RowEchelon form of this
-		Matrix<T>& Inverse();
-		size_t Rank();
-		T Determinant();
 		Matrix<T> GaussianElimination();
-		
 		vector<T> GetRow(size_t row);
 		vector<T> GetCol(size_t col);
 
@@ -94,11 +91,26 @@ class Matrix
 		// This Crazy Stuff inspires what is to follow
 		// Also readhttp://gcc.gnu.org/ml/gcc-help/2005-02/msg00033.html 
 		//friend ostream& operator<< <>(ostream &output, const Matrix<T> &Instance);
+		
+
+		// The following functions will be needed when we deal with matrices in Linear Algebra
+		// determinat
+		// inverse
+		// row-echelon form
+		// rank
+
+		Matrix<T> Inverse();
+		detType Determinant();
+		size_t Rank();
+		Matrix<T> RowEchelon();
 
 
 	private:
 		size_t nRows;
 		size_t mCols;	
+
+		detType det;
+		size_t rank;
 		
 };
 
@@ -385,131 +397,11 @@ bool Matrix<T>::operator!=(Matrix<T> &Other)
 
 
 
-/*----------------------------------------------------------------------------
- * Matrix<T>::RowEchelon -- Returns the RowEchelon form of the calling Matrix
- * Args: None 
- * Returns: Matrix<T>&
- *---------------------------------------------------------------------------*/
-template <typename T> 
-Matrix<T> Matrix<T>::RowEchelon( )
-{
-	// This function was coded based on the pseudo code given at 
-	// http://en.wikipedia.org/wiki/Hermite_normal_form#Pseudocode
-	// Please check URL for further clarification
-	bool STOP = false;
-
-	Matrix<T> copy(nRows, mCols);
-	copy = *this;
-
-	size_t lead = 0;
-	size_t rowCount = copy.nRows;
-	size_t columnCount = copy.mCols;
-
-	for(size_t r=0;r<rowCount;++r)
-	{
-		if(columnCount<=lead)
-		{
-			//Following line for debugging only
-			//cout<<"Stopping at condition 1";
-			bool STOP = true;
-		}
-		if(STOP)
-			break;
-
-		size_t i=r;
-		while(copy.matrix[i][lead]==0)
-		{
-			++i;
-			if(rowCount == i)
-			{
-				i=r;
-				++lead;
-				if(columnCount == lead)
-				{	
-					//Following line for debugging only
-					//cout<<"Stopping at condition 2";
-					STOP = true;
-				}
-			}
-		}
-
-		if(STOP)
-			break;
-		//swap rows i and r 
-		for(size_t j=0;j<columnCount; ++j)
-		{
-			T temp;
-			temp = copy.matrix[i][j];
-			copy.matrix[i][j]=copy.matrix[r][j];
-			copy.matrix[r][j]=temp;
-		}
-
-		//Divide row r by copy[r][lead]
-		for(size_t j=0; j<columnCount; ++j)
-		{
-			if(copy.matrix[r][lead]!=0)
-				copy.matrix[r][j]/=copy.matrix[r][lead];
-		}
-
-		//FOR all rows j, from 0 to number of rows, every row except r
-		//Subtract copy[j][lead] multiplied by row r from row j 
-		//END FOR
-		for(size_t j=0; j<rowCount; ++j)
-		{
-			if(j!=r)
-				for(size_t k=0; k<columnCount; ++k)
-					copy.matrix[j][k]-=copy.matrix[j][lead]*copy.matrix[r][k];
-		}
-
-		++lead;
-	}
-
-	return copy;
-}
-
-
-
 template <typename T> 
 Matrix<T>& Matrix<T>::Inverse()
 {
 
 
-}
-
-/*------------------------------------------------------
- * Matrix<T>::Rank -- Returns the rank of the Matrix
- * Args: None 
- * Returns: size_t
- *------------------------------------------------------*/
-template <typename T> 
-size_t Matrix<T>::Rank( )
-{
-	//Converts the given matrix to a RowEchelon form
-	//and thus computes the rank
-	size_t i, j;
-	size_t rank;
-
-	Matrix<T> tempMatrix = (*this).RowEchelon();
-	for(i=0;i<tempMatrix.nRows; ++i)
-	{
-		bool isRowEmpty = true;
-		for(j=0;j<tempMatrix.mCols; ++j)
-		{
-			if(tempMatrix.matrix[i][j]!=0)
-			{
-				//If atleast one element in the row is non-zero, exit from loop and move to next row
-				isRowEmpty = false;
-				break;
-			}
-		}
-
-		//If the entire row is empty, then remaining rows are also empty, hence return rank
-		if(isRowEmpty == true)
-			break;
-	}
-
-	rank = i;
-	return rank;
 }
 
 template <typename T> 
@@ -616,6 +508,73 @@ bool Matrix<T>::ExchangeCols(size_t i, size_t j)
 
 	return true;
 }
+
+
+/*------------------------------------------------------
+ * Matrix<T>::Inverse -- 
+ * Args:  
+ * Returns: Matrix<T>
+ *------------------------------------------------------*/
+template<typename T>
+Matrix<T> Matrix<T>::Inverse( )
+{
+
+
+
+
+
+}
+
+/*------------------------------------------------------
+ * Matrix<T>::Determinant -- 
+ * Args:  
+ * Returns: detType
+ *------------------------------------------------------*/
+template<typename T>
+detType Matrix<T>::Determinant( )
+{
+
+
+
+
+}
+
+
+/*------------------------------------------------------
+ * Matrix<T>::RowEchelon -- 
+ * Args:  
+ * Returns: Matrix<T>
+ *------------------------------------------------------*/
+template<typename T>
+Matrix<T> Matrix<T>::RowEchelon( )
+{
+
+
+
+
+
+
+
+
+}
+
+/*------------------------------------------------------
+ * Matrix<T>::Rank -- 
+ * Args:  
+ * Returns: size_t
+ *------------------------------------------------------*/
+template<typename T>
+size_t Matrix<T>::Rank( )
+{
+
+
+
+
+
+}
+
+
+
 
 /*------------------------------------------------------
  * &operator<< -- overloading the << operator
