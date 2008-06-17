@@ -21,6 +21,7 @@
 #include <iomanip>
 using namespace std;
 
+#define SMALL 0.00000001
 typedef double detType;
 
 template <typename T>
@@ -68,9 +69,6 @@ class Matrix
 		bool ExchangeCols(size_t i, size_t j);
 
 
-
-
-		// What follows next is absolutely Crazy stuff.
 		// Read http://www.artima.com/cppsource/simple2.html
 		// This Crazy Stuff inspires what is to follow
 		// Also readhttp://gcc.gnu.org/ml/gcc-help/2005-02/msg00033.html 
@@ -87,6 +85,8 @@ class Matrix
 		detType Determinant();
 		size_t Rank();
 		Matrix<T> RowEchelon();
+
+		void Print();
 
 
 	private:
@@ -145,6 +145,30 @@ size_t Matrix<T>::GetNumCols()
 {
 	return mCols;
 }
+
+
+/*------------------------------------------------------
+ * Matrix<T>::Print -- Prints a matrix
+ * Args:  
+ * Returns: void
+ *------------------------------------------------------*/
+template <typename T>
+void Matrix<T>::Print()
+{
+	size_t i, j;
+
+	for(i=0;i<nRows;i++)
+	{
+		cout << setiosflags(ios::right);
+		cout << setiosflags(ios::fixed);
+		for(j=0;j<mCols;j++)
+			cout << setprecision(6)<<matrix[i][j]<<setw(15);
+
+		cout << "\n";
+	}
+
+}
+
 
 
 /*------------------------------------------------------
@@ -380,21 +404,6 @@ bool Matrix<T>::operator!=(Matrix<T> &Other)
 }
 
 
-
-template <typename T> 
-Matrix<T>& Matrix<T>::Inverse()
-{
-
-
-}
-
-template <typename T> 
-T Matrix<T>::Determinant()
-{
-
-
-}
-
 template <typename T>
 /*------------------------------------------------------
  * Matrix<T>::GaussianElimination -- 
@@ -532,13 +541,67 @@ detType Matrix<T>::Determinant( )
 template<typename T>
 Matrix<T> Matrix<T>::RowEchelon( )
 {
+	// we will return the RowEchelon Matrix to the user
+	Matrix<T> R(nRows, mCols);
+	size_t i=0, j, k, l, t;
+	T mx;
+	detType factor;
+
+	// Breif Description of the Algorithm :
+	// Run through columns 1 to mCols-1 using var j
+	// start with i=0. For each col find the maximum 
+	// absolute element, below i, mx, at position t.
+	// if mx == 0 continue
+	// else swap the t and i row, using the swap function.
+	// for l in i+1 -> nRows
+	//   factor = (l,j)/(i,j) 
+	//   (l,j) = 0
+	//   for k in j+1 -> mCols
+	//   	(l,k) -= (i,j) * factor
+	// increment i
+	// continue
+	
+	R = *this;
+	
+
+	for(j=0;j<mCols-1 && i<nRows;j++)
+	{
+		mx = R.matrix[i][j];
+		t = i;
+		for(l=j+1;l<nRows;l++)
+			if(R.matrix[l][j] > mx){ 
+				mx = R.matrix[l][j];
+				t = l;
+			}
+		cout << "("<<mx<<","<<t<<")"<<"max and t\n";
 
 
+		if(mx==0) continue;
+		
+		// Else
+		if(i!=t) 
+			R.ExchangeRows(i, t);
 
+		for(l=i+1; l<nRows; l++)
+		{
+			factor = R.matrix[l][j]/(detType)(R.matrix[i][j]);
+			cout << "("<<i<<","<<l<<")"<<factor;
+			cout << "\n";
+			R.matrix[l][j] = 0;
 
+			for(k=j+1; k<mCols;k++)
+				R.matrix[l][k] -= (T) (R.matrix[i][k] * factor);
+		}
 
+		cout<<"After "<< i << "th row \n";
+		R.Print();
+		cout <<"\n\n";
+		i+=1;
+	}
 
+	//we also compute the rank as a side effect
 
+	return R;
 
 }
 
@@ -559,14 +622,13 @@ size_t Matrix<T>::Rank( )
 
 
 
-
 /*------------------------------------------------------
  * &operator<< -- overloading the << operator
  * Args: ostream &output, const Matrix &Instance
  * Returns: ostream
  * Pretty Print
  *------------------------------------------------------*/
-/* T FOR YOU
+/*
 template <typename T> 
 ostream& operator<<(ostream &output, const Matrix<T> &Instance)
 {
