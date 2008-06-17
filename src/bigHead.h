@@ -719,16 +719,31 @@ Matrix<T> Matrix<T>::RowEchelon( )
 
 /*------------------------------------------------------
  * Matrix<T>::Rank -- 
- * Args:  
+ * Args: None 
  * Returns: size_t
  *------------------------------------------------------*/
 template<typename T>
 size_t Matrix<T>::Rank( )
 {
+	bool isRowEmpty;
+	size_t rank;
+	size_t i, j;
 
+	for(i=0;i<nRows; ++i)
+	{
+		isRowEmpty = true;
+		for(j=0;j<mCols; ++j)
+		{
+			if((*this).matrix[i][j]!=0)
+				isRowEmpty = false;
+		}
 
+		if(isRowEmpty == true)
+			break;
+	}
 
-
+	rank = i;
+	return rank;
 
 }
 
