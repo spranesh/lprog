@@ -36,7 +36,8 @@ class Matrix
 
 		//Constructor for the class, with two arguments
 		Matrix(size_t n, size_t m);
-		
+		Matrix(const Matrix<T> &Other);
+
 		// functions for accessing number of rows, and number of cols
 		size_t GetNumRows();
 		size_t GetNumCols();
@@ -130,6 +131,21 @@ Matrix<T>::Matrix(size_t n, size_t m)
 
 	for (size_t i=0;i<nRows; i++)
 		matrix[i] = new T[mCols];
+}
+
+template <typename T>
+Matrix<T>::Matrix(const Matrix<T> &Other)
+{
+	nRows = Other.nRows;
+	mCols = Other.mCols;
+
+	matrix = new T*[nRows];
+	for(size_t i=0;i<nRows; ++i)
+		matrix[i] = new T[mCols];
+
+	for(size_t i=0;i<nRows; ++i)
+		for(size_t j=0;j<mCols; ++j)
+			matrix[i][j]=Other.matrix[i][j];
 }
 
 /*------------------------------------------------------

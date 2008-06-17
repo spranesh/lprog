@@ -53,13 +53,17 @@ int main()
 	//Matrix<float> myMatrix2 = myMatrix.RowEchelon();
 	//cout<<myMatrix.matrix[0]<<'\n';
 	
-	Matrix<float> RE = myMatrix.RowEchelon();
+	//RowEchelon works
+	//Matrix<float> RE = myMatrix.RowEchelon();
 
-	Matrix<float> myMatrix2 = myMatrix.ReducedRowEchelon();
+	//ReducedRowEchelon works
+	//Matrix<float> myMatrix2 = myMatrix.ReducedRowEchelon();
 
 
 	//cout<<myMatrix.matrix[0]<<'\n';
 	//myMatrix.ExchangeCols(0,1);
+
+	Matrix<float> myMatrix2(myMatrix.ReducedRowEchelon());
 
 	for(i=0;i<row;i++)
 	{
@@ -69,8 +73,8 @@ int main()
 	}
 	
 	//cout<<myMatrix2.Rank()<<"\n";
-	cin>>myMatrix(0,0);
-	cout<<myMatrix(0,0);
+//	cin>>myMatrix(0,0);
+//	cout<<myMatrix(0,0);
 	return 0;
 }
 
