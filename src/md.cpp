@@ -27,7 +27,7 @@ int main()
 	Matrix<float> myMatrix(row, col);
 	for(i=0;i<row;i++)
 		for(j=0;j<col;j++)
-			cin >> myMatrix.matrix[i][j];
+			cin >> myMatrix(i,j);
 
 	// cin >> row>> col;
 

@@ -32,7 +32,6 @@ class Matrix
 	public:
 		// We define as a double dimensional array. This should
 		// speed up things quite a lot
-		T** matrix;
 
 		//Constructor for the class, with two arguments
 		Matrix(size_t n, size_t m);
@@ -42,7 +41,13 @@ class Matrix
 		size_t GetNumRows();
 		size_t GetNumCols();
 
+		//functions for accessing rows and cols
+		vector<T> GetRow(size_t row);
+		vector<T> GetCol(size_t col);
+
+
 		// We first overload operators as shown below.
+
 		// If you are new to this, I suggest you have a look at 
 		// http://www.cs.caltech.edu/courses/cs11/material/cpp/donnie/cpp-ops.html
 		// define  the equality statement
@@ -69,35 +74,29 @@ class Matrix
 
 
 		// Next we declare the usual Matrix Functions
-		Matrix<T> GaussianElimination();
-		vector<T> GetRow(size_t row);
-		vector<T> GetCol(size_t col);
 
 		bool ExchangeRows(size_t i, size_t j);
 		bool ExchangeCols(size_t i, size_t j);
 
 
-		// Read http://www.artima.com/cppsource/simple2.html
-		// This Crazy Stuff inspires what is to follow
-		// Also readhttp://gcc.gnu.org/ml/gcc-help/2005-02/msg00033.html 
-		//friend ostream& operator<< <>(ostream &output, const Matrix<T> &Instance);
+		void Print();
 		
 
-		// The following functions will be needed when we deal with matrices in Linear Algebra
-		// determinat
-		// inverse
-		// row-echelon form
-		// rank
-
+		// Important Matrix Functions
 		Matrix<T> Inverse();
 		detType Determinant();
 		size_t Rank();
 		Matrix<T> RowEchelon();
 		Matrix<T> ReducedRowEchelon();
 
-		void Print();
+		// Read http://www.artima.com/cppsource/simple2.html
+		// This Crazy Stuff inspires what is to follow
+		// Also readhttp://gcc.gnu.org/ml/gcc-help/2005-02/msg00033.html 
+		// friend ostream& operator<< <>(ostream &output, const Matrix<T> &Instance);
 
 	private:
+		T** matrix;
+
 		size_t nRows;
 		size_t mCols;	
 
@@ -151,7 +150,7 @@ Matrix<T>::Matrix(const Matrix<T> &Other)
 
 	for(size_t i=0;i<nRows; ++i)
 		for(size_t j=0;j<mCols; ++j)
-			matrix[i][j]=Other.matrix[i][j];
+			matrix[i][j]=Other(i,j);
 }
 template <typename T>
 /*------------------------------------------------------
@@ -242,7 +241,7 @@ Matrix<T>& Matrix<T>::operator=(Matrix<T> &Other)
 
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols; j++)
-				matrix[i][j] = Other.matrix[i][j];
+				matrix[i][j] = Other(i,j);
 	}
 
 	return *this;
@@ -267,7 +266,7 @@ Matrix<T>& Matrix<T>::operator+=(Matrix<T> &Other)
 	{
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols;j++)
-				matrix[i][j] += Other.matrix[i][j];
+				matrix[i][j] += Other(i,j);
 	}
 
 	return *this;
@@ -291,7 +290,7 @@ Matrix<T>& Matrix<T>::operator-=(Matrix<T> &Other)
 	{
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols;j++)
-				matrix[i][j] -= Other.matrix[i][j];
+				matrix[i][j] -= Other(i,j);
 	}
 
 	
@@ -340,8 +339,8 @@ Matrix<T> Matrix<T>::operator+(Matrix<T> &Other) const
 	{
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols;j++)
-				returnMatrix.matrix[i][j] = 
-					matrix[i][j] + Other.matrix[i][j];
+				returnMatrix(i,j) = 
+					matrix[i][j] + Other(i,j);
 	}
 
 	return returnMatrix;
@@ -369,8 +368,8 @@ Matrix<T> Matrix<T>::operator-(Matrix<T> &Other) const
 	{
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols;j++)
-				returnMatrix.matrix[i][j] = 
-					matrix[i][j] - Other.matrix[i][j];
+				returnMatrix(i,j) = 
+					matrix[i][j] - Other(i,j);
 	}
 
 	return returnMatrix;
@@ -398,11 +397,11 @@ Matrix<T> Matrix<T>::operator*(Matrix<T> &Other) const
 		for (i=0;i<nRows;i++)
 			for(j=0;j<Other.GetNumCols();j++)
 			{
-				returnMatrix.matrix[i][j]=0;
+				returnMatrix(i,j)=0;
 
 				for(k=0;k<mCols;k++)
-					returnMatrix.matrix[i][j] += 
-						matrix[i][k] * Other.matrix[k][j];
+					returnMatrix(i,j) += 
+						matrix[i][k] * Other(k,j);
 			}
 	}
 
@@ -455,7 +454,7 @@ bool Matrix<T>::operator==(Matrix<T> &Other)
 
 	for(i=0;i<nRows;i++)
 		for(j=0;j<mCols;j++)
-			if(matrix[i][j]!=Other.matrix[i][j])
+			if(matrix[i][j]!=Other(i,j))
 				return false;
 
 	return true;
@@ -473,27 +472,6 @@ bool Matrix<T>::operator!=(Matrix<T> &Other)
 {
 	return !(*this == Other);
 }
-
-
-template <typename T>
-/*------------------------------------------------------
- * Matrix<T>::GaussianElimination -- 
- * Args:  
- * Returns: Matrix<T>
- * Throws:
- * See:
- * Bugs:
- *------------------------------------------------------*/
-Matrix<T> Matrix<T>::GaussianElimination( )
-{
-
-	Matrix<T> copy(nRows, mCols);
-	copy = *this;
-
-	return copy;
-
-}
-
 
 
 /*------------------------------------------------------
@@ -602,7 +580,7 @@ Matrix<T> Matrix<T>::ReducedRowEchelon( )
 		}
 
 		i=r;
-		while(copy.matrix[i][lead]==0)
+		while(copy(i,lead)==0)
 		{
 			++i;
 			if(rowCount == i)
@@ -621,11 +599,11 @@ Matrix<T> Matrix<T>::ReducedRowEchelon( )
 		//swap rows i and r 
 		copy.ExchangeRows(i, r);
 
-		T divider = copy.matrix[r][lead];
+		T divider = copy(r,lead);
 		//Divide row r by copy[r][lead]
 		for(size_t j=0; j<columnCount; ++j)
 		{
-			copy.matrix[r][j]/=divider;
+			copy(r,j)/=divider;
 		}
 
 		//FOR all rows j, from 0 to number of rows, every row except r
@@ -635,9 +613,9 @@ Matrix<T> Matrix<T>::ReducedRowEchelon( )
 		{
 			if(j!=r)
 			{
-				T multiplier = copy.matrix[j][lead];
+				T multiplier = copy(j,lead);
 				for(size_t k=0; k<columnCount; ++k)
-					copy.matrix[j][k]-=multiplier*copy.matrix[r][k];
+					copy(j,k)-=multiplier*copy(r,k);
 			}
 		}
 
@@ -807,11 +785,11 @@ Matrix<T> Matrix<T>::RowEchelon( )
 
 	for(j=0;j<mCols-1 && i<nRows;j++)
 	{
-		mx = R.matrix[i][j];
+		mx = R(i,j);
 		t = i;
 		for(l=j+1;l<nRows;l++)
-			if(R.matrix[l][j] > mx){ 
-				mx = R.matrix[l][j];
+			if(R(l,j) > mx){ 
+				mx = R(l,j);
 				t = l;
 			}
 		//cout << "("<<mx<<","<<t<<")"<<"max and t\n";
@@ -825,13 +803,13 @@ Matrix<T> Matrix<T>::RowEchelon( )
 
 		for(l=i+1; l<nRows; l++)
 		{
-			factor = R.matrix[l][j]/(detType)(R.matrix[i][j]);
+			factor = R(l,j)/(detType)(R(i,j));
 			//cout << "("<<i<<","<<l<<")"<<factor;
 			//cout << "\n";
-			R.matrix[l][j] = 0;
+			R(l,j) = 0;
 
 			for(k=j+1; k<mCols;k++)
-				R.matrix[l][k] -= (T) (R.matrix[i][k] * factor);
+				R(l,k) -= (T) (R(i,k) * factor);
 		}
 
 		//cout<<"After "<< i << "th row \n";
@@ -899,7 +877,7 @@ ostream& operator<<(ostream &output, const Matrix<T> &Instance)
 	for (int i=0; i<Instance.GetNumRows(); i++)
 	{
 		for (int j=0; j<Instance.GetNumCols(); j++)
-			output << setw(5) << Instance.matrix[i][j];
+			output << setw(5) << Instance(i,j);
 		output << endl; 
 	}
 return output; 
