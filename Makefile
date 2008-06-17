@@ -5,20 +5,22 @@
 SHELL=/bin/sh
 
 # set all Warnings and switch on debug
-CC=g++ -Wall -I include -g
+
+C++ = g++
+C++-FLAGS = -Wall -g -c
+LINKER = g++
+LINKER-FLAGS = -o
 
 # set VPATH so that we can refer to dependencies
 # in a more natural manner
 VPATH=src:include:obj
 
 
-all: makeReqdDirs matrixLibs md
+all: makeReqdDirs md
 
 #md = matrix driver
-md: md.cpp matrix.cpp matrix.h exceptions.h matrix.o
-	$(CC) -c src/md.cpp -o obj/md.o
-	$(CC) obj/md.o obj/matrix.o -o bin/md
-
+md: md.cpp matrix.cpp matrix.h exceptions.h 
+	g++ -I include -Wall -g src/md.cpp -o bin/md
 
 makeReqdDirs:
 # This is to be replaced by an if clause later in time
@@ -28,11 +30,6 @@ makeReqdDirs:
 	mkdir -p bin
 	mkdir -p data
 	mkdir -p obj
-
-
-matrixLibs: matrix.cpp matrix.h exceptions.h
-	$(CC) -c src/matrix.cpp -o obj/matrix.o
-
 
 clean:
 	rm -rf *~ *.o 

@@ -16,8 +16,9 @@
  */
 
 #include <iostream>
-#include "bigHead.h"
+#include "matrix.h"
 using namespace std;
+
 
 int main()
 {

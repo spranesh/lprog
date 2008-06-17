@@ -108,6 +108,9 @@ class Matrix
 		void ClearValidity();
 };
 
+#include "matrix.cpp"
+// http://www.neowin.net/forum/index.php?s=b67d2e75582fb412b7b5c1152e934836&showtopic=633585&pid=589358876&st=0&#entry589358876
+
 #endif
 
 
