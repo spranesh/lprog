@@ -24,19 +24,7 @@ using namespace std;
 typedef double detType;
 
 
-template<typename T>
-/*------------------------------------------------------
- * abs -- Returns absolute value 
- * Args: T x
- * Returns: T
- *------------------------------------------------------*/
-T abs(T x)
-{
-	if (x<0)
-		return -x;
-	return x;
-}
-
+//deleted abs
 
 
 template <typename T>
