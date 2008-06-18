@@ -62,8 +62,6 @@ class Matrix
 		bool ExchangeCols(size_t i, size_t j);
 
 
-		void Print() const;
-		
 		Matrix<T> Inverse();
 		detType Determinant();
 		size_t Rank();
