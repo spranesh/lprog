@@ -38,7 +38,7 @@ Matrix<T>::Matrix(size_t n, size_t m)
 
 
 /*------------------------------------------------------
- * Matrix -- constructor for the Matrix Class
+ * Matrix -- copy constructor for the Matrix Class
  * Args: const Matrix<T> &Other
  *------------------------------------------------------*/
 template <typename T>
@@ -78,7 +78,6 @@ size_t Matrix<T>::GetNumRows()
 	return nRows;
 }
 
-
 /*------------------------------------------------------
  * Matrix<T>::GetNumCols -- return no. of Cols in Matrix
  * Returns: size_t
@@ -89,14 +88,13 @@ size_t Matrix<T>::GetNumCols()
 	return mCols;
 }
 
-
 /*------------------------------------------------------
  * Matrix<T>::Print -- Prints a matrix
  * Args:  
  * Returns: void
  *------------------------------------------------------*/
 template <typename T>
-void Matrix<T>::Print()
+void Matrix<T>::Print() const
 {
 	size_t i, j;
 
@@ -118,7 +116,6 @@ void Matrix<T>::Print()
  * operator= -- overloads the = operator for matrices
  * Args: A constant reference to another Matrix, Other
  * Returns: reference to matrix of the same type
- *
  * Ensures no-self-assignment, and resizes matrix if necessary
  *------------------------------------------------------*/
 template <typename T>
@@ -126,7 +123,8 @@ Matrix<T>& Matrix<T>::operator=(Matrix<T> &Other)
 {
 	size_t i, j;
 
-	if(&Other != this) //avoid self assignment
+	//avoid self assignment
+	if(&Other != this) 
 	{	
 		// we resize the object if necessary
 		if(nRows!=Other.GetNumRows() || mCols!=Other.GetNumCols())
@@ -136,12 +134,8 @@ Matrix<T>& Matrix<T>::operator=(Matrix<T> &Other)
 
 			delete [] matrix;
 
-			// we now assign space by calling the
-			// constructor again
-			Matrix(Other.GetNumRows(), Other.GetNumCols()); // will this Work?
+			Matrix(Other.GetNumRows(), Other.GetNumCols());
 		}
-
-		// now we assign the values of Other to our matrix
 
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols; j++)
@@ -152,8 +146,6 @@ Matrix<T>& Matrix<T>::operator=(Matrix<T> &Other)
 
 	return *this;
 }
-
-
 
 /*------------------------------------------------------
  * Matrix<T>::operator+= -- overloads the += operator
@@ -281,8 +273,7 @@ Matrix<T> Matrix<T>::operator-(Matrix<T> &Other) const
 	{
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols;j++)
-				returnMatrix(i,j) = 
-					matrix[i][j] - Other(i,j);
+				returnMatrix(i,j) = matrix[i][j] - Other(i,j);
 	}
 
 	return returnMatrix;
@@ -320,9 +311,6 @@ Matrix<T> Matrix<T>::operator*(Matrix<T> &Other) const
 
 	return returnMatrix;
 }
-
-
-
 
 /*------------------------------------------------------
  *  -- 
@@ -398,7 +386,6 @@ bool Matrix<T>::operator!=(Matrix<T> &Other)
 template <typename T> 
 vector<T> Matrix<T>::GetRow(size_t row)
 {
-	// the (row)th row will have mCols elements
 	vector<T> rowAsked;
 
 	for(size_t j = 0; j<mCols; j++)
@@ -423,9 +410,6 @@ vector<T> Matrix<T>::GetCol(size_t col)
 
 	return colAsked;
 }
-
-
-
 
 /*------------------------------------------------------
  * Matrix<T>::ExchangeRows -- 
