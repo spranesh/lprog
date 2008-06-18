@@ -61,6 +61,9 @@ class Matrix
 		bool ExchangeRows(size_t i, size_t j);
 		bool ExchangeCols(size_t i, size_t j);
 
+
+		void Print() const;
+		
 		Matrix<T> Inverse();
 		detType Determinant();
 		size_t Rank();
