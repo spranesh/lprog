@@ -31,59 +31,36 @@ template <typename T>
 class Matrix
 {
 	public:
-		// We define as a double dimensional array. This should
-		// speed up things quite a lot
-
-		//Constructor for the class, with two arguments
 		Matrix(size_t n, size_t m);
 		Matrix(const Matrix<T> &Other);
 
-		// functions for accessing number of rows, and number of cols
-		size_t GetNumRows();
-		size_t GetNumCols();
+		size_t GetNumRows() const;
+		size_t GetNumCols() const;
 
-		//functions for accessing rows and cols
-		vector<T> GetRow(size_t row);
-		vector<T> GetCol(size_t col);
+		void Print() const;
 
+		vector<T> GetRow(size_t row) const;
+		vector<T> GetCol(size_t col) const;
 
-		// We first overload operators as shown below.
-
-		// If you are new to this, I suggest you have a look at 
-		// http://www.cs.caltech.edu/courses/cs11/material/cpp/donnie/cpp-ops.html
-		// define  the equality statement
 		Matrix<T>& operator=(Matrix<T> &Other);
 
-		// Next we declare the compound equality statements
 		Matrix<T>& operator+=(Matrix<T> &Other);
 		Matrix<T>& operator-=(Matrix<T> &Other);
 		Matrix<T>& operator*=(Matrix<T> &Other);
 
-		// Declare the normal operations
 		Matrix<T> operator+(Matrix<T> &Other) const;
 		Matrix<T> operator-(Matrix<T> &Other) const;
 		Matrix<T> operator*(Matrix<T> &Other) const;
 
-		// We declare the subscript overloads
 		T& operator() (size_t row, size_t col);
 		T operator() (size_t row, size_t col) const;
 
-
-		// Now declare the comparison operations
-		bool operator==(Matrix<T> &Other);
-		bool operator!=(Matrix<T> &Other);
-
-
-		// Next we declare the usual Matrix Functions
+		bool operator==(Matrix<T> &Other) const;
+		bool operator!=(Matrix<T> &Other) const;
 
 		bool ExchangeRows(size_t i, size_t j);
 		bool ExchangeCols(size_t i, size_t j);
 
-
-		void Print() const;
-		
-
-		// Important Matrix Functions
 		Matrix<T> Inverse();
 		detType Determinant();
 		size_t Rank();

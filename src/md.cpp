@@ -64,13 +64,13 @@ int main()
 	// cout<<myMatrix.matrix[0]<<'\n';
 	// myMatrix.ExchangeCols(0,1);
 
-//	Matrix<float> myMatrix2(myMatrix.Inverse());
+	Matrix<float> myMatrix2(myMatrix);
+	Matrix<float> myMatrix3(myMatrix + myMatrix2);
 
-	cout<<"\n\n";
-	myMatrix.Print();
-	//cout<<myMatrix2.Rank()<<"\n";
+	myMatrix3.Print();
+//	cout<<"\n"<<(myMatrix2!=myMatrix)<<"\n";
 //	cin>>myMatrix(0,0);
-//	cout<<myMatrix(0,0);
+//	cout<<"\n"<<myMatrix(0,0);
 	return 0;
 }
 

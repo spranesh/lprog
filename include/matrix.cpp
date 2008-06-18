@@ -5,7 +5,7 @@
  *
  *    Description:  Contains function definitions for Matrices
  *
- *        Created:  Friday 13 June 2008 08:30:58  IST
+ *        Created:  Friday 13 June 2008 08:30:58 IST
  *       Revision:  none
  *       Compiler:  g++
  *
@@ -15,12 +15,10 @@
  */
 
 
-#include<vector>
+#include <vector>
 #include <iostream>
 #include <iomanip>
 using namespace std;
-
-
 
 /*------------------------------------------------------
  * Matrix -- constructor for the Matrix Class
@@ -35,7 +33,6 @@ Matrix<T>::Matrix(size_t n, size_t m)
 	for (size_t i=0;i<nRows; i++)
 		matrix[i] = new T[mCols];
 }
-
 
 /*------------------------------------------------------
  * Matrix -- copy constructor for the Matrix Class
@@ -73,7 +70,7 @@ void Matrix<T>::ClearValidity()
  * Returns: size_t
  *------------------------------------------------------*/
 template <typename T>
-size_t Matrix<T>::GetNumRows()
+size_t Matrix<T>::GetNumRows() const
 {
 	return nRows;
 }
@@ -83,7 +80,7 @@ size_t Matrix<T>::GetNumRows()
  * Returns: size_t
  *------------------------------------------------------*/
 template <typename T>
-size_t Matrix<T>::GetNumCols()
+size_t Matrix<T>::GetNumCols() const
 {
 	return mCols;
 }
@@ -109,8 +106,6 @@ void Matrix<T>::Print() const
 	}
 
 }
-
-
 
 /*------------------------------------------------------
  * operator= -- overloads the = operator for matrices
@@ -234,7 +229,7 @@ template <typename T>
 Matrix<T> Matrix<T>::operator+(Matrix<T> &Other) const
 {
 
-	int i, j;
+	size_t i, j;
 	static Matrix<T> returnMatrix (nRows, mCols);
 
 	if(nRows != Other.GetNumRows()||mCols != Other.GetNumCols())
@@ -263,7 +258,7 @@ template <typename T>
 Matrix<T> Matrix<T>::operator-(Matrix<T> &Other) const
 {
 
-	int i, j;
+	size_t i, j;
 	Matrix<T> returnMatrix (nRows, mCols);
 
 	if(nRows != Other.GetNumRows()||mCols != Other.GetNumCols())
@@ -289,7 +284,7 @@ Matrix<T> Matrix<T>::operator-(Matrix<T> &Other) const
 template <typename T> 
 Matrix<T> Matrix<T>::operator*(Matrix<T> &Other) const
 {
-	int i, j, k;
+	size_t i, j, k;
 	Matrix <T> returnMatrix (nRows, Other.GetNumCols());
 
 	if(mCols != Other.GetNumCols())
@@ -313,7 +308,9 @@ Matrix<T> Matrix<T>::operator*(Matrix<T> &Other) const
 }
 
 /*------------------------------------------------------
- *  -- 
+ * Matrix<T>::operator()
+ * Instead of accessing elements by ObjectName.matrix[i][j],
+ * we overload the () so that we can access by ObjectName(i, j)
  * Args: size_t row, size_t col
  * Returns: T & 
  * Throws: IncompatibleMatricesException
@@ -330,7 +327,9 @@ T & Matrix<T>::operator() (size_t row, size_t col)
 }
  
 /*------------------------------------------------------
- *  -- 
+ * Matrix<T>::operator()
+ * Instead of accessing elements by ObjectName.matrix[i][j],
+ * we overload the () so that we can access by ObjectName(i, j)
  * Args:size_t row, size_t col
  * Returns: T 
  * Throws: IncompatibleMatricesException
@@ -349,9 +348,9 @@ T Matrix<T>::operator() (size_t row, size_t col) const
  * Returns: boolean value
  *------------------------------------------------------*/
 template <typename T> 
-bool Matrix<T>::operator==(Matrix<T> &Other)
+bool Matrix<T>::operator==(Matrix<T> &Other) const
 {
-	int i, j;
+	size_t i, j;
 
 	if(nRows!=Other.GetNumRows() || mCols!=Other.GetNumCols())
 		return false;
@@ -372,7 +371,7 @@ template <typename T>
  * Returns: boolean value
  * uses the == operator
  *------------------------------------------------------*/
-bool Matrix<T>::operator!=(Matrix<T> &Other)
+bool Matrix<T>::operator!=(Matrix<T> &Other) const
 {
 	return !(*this == Other);
 }
@@ -384,7 +383,7 @@ bool Matrix<T>::operator!=(Matrix<T> &Other)
  * Returns: vector<T>
  *------------------------------------------------------*/
 template <typename T> 
-vector<T> Matrix<T>::GetRow(size_t row)
+vector<T> Matrix<T>::GetRow(size_t row) const
 {
 	vector<T> rowAsked;
 
@@ -401,7 +400,7 @@ vector<T> Matrix<T>::GetRow(size_t row)
  * Returns: vector<T>
  *------------------------------------------------------*/
 template <typename T> 
-vector<T> Matrix<T>::GetCol(size_t col)
+vector<T> Matrix<T>::GetCol(size_t col) const
 {
 	vector<T> colAsked;
 
@@ -535,7 +534,7 @@ Matrix<T> Matrix<T>::ReducedRowEchelon( )
  * Returns: Matrix<T>
  *------------------------------------------------------*/
 template<typename T>
-Matrix<T> Matrix<T>::Inverse( )
+Matrix<T> Matrix<T>::Inverse( ) 
 {
 	Matrix<T> R(nRows, mCols);
 	Matrix<T> I(nRows, mCols);
@@ -621,11 +620,12 @@ Matrix<T> Matrix<T>::Inverse( )
 		d *= mx;
 
 
-		cout << "j : "<<j<<"\n";
-		cout << "R : \n";
+		cout <<"\n"<< "j : "<<j<<"\n";
+		cout <<"\n"<< "R : \n";
 		R.Print();
-		cout << "I : \n";
+		cout <<"\n"<< "I : \n";
 		I.Print();
+		cout<<"\n";
 	}
 	detValid = true;
 	det = d;
