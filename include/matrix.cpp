@@ -87,7 +87,7 @@ size_t Matrix<T>::GetNumCols() const
 
 /*------------------------------------------------------
  * Matrix<T>::Print -- Prints a matrix
- * Args:  
+ * Args: None
  * Returns: void
  *------------------------------------------------------*/
 template <typename T>
@@ -117,6 +117,7 @@ template <typename T>
 Matrix<T>& Matrix<T>::operator=(Matrix<T> &Other)
 {
 	size_t i, j;
+	
 
 	//avoid self assignment
 	if(&Other != this) 
@@ -129,6 +130,8 @@ Matrix<T>& Matrix<T>::operator=(Matrix<T> &Other)
 
 			delete [] matrix;
 
+			// we now assign space by calling the
+			// constructor again
 			Matrix(Other.GetNumRows(), Other.GetNumCols());
 		}
 
@@ -208,10 +211,7 @@ Matrix<T>& Matrix<T>::operator*=(Matrix<T> &Other)
 
 	*this = newThis;
 
-	// we return *this only to ensure that we can
-	// have for whatever reason, a chain of assignments
-	// and thereby sticking to the C rule of every statement
-	// evaluating to something.
+	// Returning *this to ensure C style assignment
 	
 	ClearValidity();
 
@@ -239,8 +239,7 @@ Matrix<T> Matrix<T>::operator+(Matrix<T> &Other) const
 	{
 		for(i=0;i<nRows;i++)
 			for(j=0;j<mCols;j++)
-				returnMatrix(i,j) = 
-					matrix[i][j] + Other(i,j);
+				returnMatrix(i,j) = matrix[i][j] + Other(i,j);
 	}
 
 	return returnMatrix;
@@ -287,7 +286,7 @@ Matrix<T> Matrix<T>::operator*(Matrix<T> &Other) const
 	size_t i, j, k;
 	Matrix <T> returnMatrix (nRows, Other.GetNumCols());
 
-	if(mCols != Other.GetNumCols())
+	if(mCols != Other.GetNumRows())
 		throw IncompatibleMatricesException();
 
 	else
@@ -319,6 +318,7 @@ template<typename T>
 T & Matrix<T>::operator() (size_t row, size_t col)
 {
 	if (row >= nRows || col >= mCols)
+		//exception
 		throw IncompatibleMatricesException();
 
 	ClearValidity();
@@ -338,6 +338,7 @@ template<typename T>
 T Matrix<T>::operator() (size_t row, size_t col) const
 {
 	if (row >= nRows || col >= mCols)
+		//exception
 		throw IncompatibleMatricesException();
 	return matrix[row][col];
 } 
@@ -378,7 +379,7 @@ bool Matrix<T>::operator!=(Matrix<T> &Other) const
 
 
 /*------------------------------------------------------
- * Matrix<T>::GetRow -- Get the 'row' Row
+ * Matrix<T>::GetRow -- Get a Row
  * Args: size_t row
  * Returns: vector<T>
  *------------------------------------------------------*/
@@ -395,7 +396,7 @@ vector<T> Matrix<T>::GetRow(size_t row) const
 
 
 /*------------------------------------------------------
- * Matrix<T>::GetCol -- Get the 'col' Column
+ * Matrix<T>::GetCol -- Get a Column
  * Args: size_t col
  * Returns: vector<T>
  *------------------------------------------------------*/
@@ -434,6 +435,11 @@ bool Matrix<T>::ExchangeRows(size_t i, size_t j)
 }
 	
 template<typename T>
+/*------------------------------------------------------
+ * Matrix<T>::ExchangeCols -- 
+ * Args: size_t i, size_t j
+ * Returns: bool
+ *------------------------------------------------------*/
 bool Matrix<T>::ExchangeCols(size_t i, size_t j)
 {
 	if(i>=mCols || j>=mCols )
@@ -457,14 +463,12 @@ bool Matrix<T>::ExchangeCols(size_t i, size_t j)
 /*----------------------------------------------------------------------------
  * Matrix<T>::ReducedRowEchelon -- Returns the RowEchelon form of the calling Matrix
  * Args: None 
- * Returns: Matrix<T>&
+ * Returns: Matrix<T>
  *---------------------------------------------------------------------------*/
 template <typename T> 
 Matrix<T> Matrix<T>::ReducedRowEchelon( )
 {
-	// This function was coded based on the pseudo code given at 
 	// http://en.wikipedia.org/wiki/Hermite_normal_form#Pseudocode
-	// Please check URL for further clarification
 	Matrix<T> copy(nRows, mCols);
 	copy = *this;
 
@@ -477,8 +481,6 @@ Matrix<T> Matrix<T>::ReducedRowEchelon( )
 	{
 		if(columnCount<=lead)
 		{
-			//Following line for debugging only
-			//cout<<"Stopping at condition 1";
 			return copy;
 		}
 
@@ -492,33 +494,30 @@ Matrix<T> Matrix<T>::ReducedRowEchelon( )
 				++lead;
 				if(columnCount == lead)
 				{	
-					//Following line for debugging only
-					//cout<<"Stopping at condition 2";
 					return copy;
 				}
 			}
 		}
 
-		//swap rows i and r 
 		copy.ExchangeRows(i, r);
 
-		T divider = copy(r,lead);
-		//Divide row r by copy[r][lead]
+		T divisor = copy(r,lead);
+		// Divide row r by copy[r][lead]
 		for(size_t j=0; j<columnCount; ++j)
 		{
-			copy(r,j)/=divider;
+			copy(r,j)/=divisor;
 		}
 
-		//FOR all rows j, from 0 to number of rows, every row except r
-		//Subtract copy[j][lead] multiplied by row r from row j 
-		//END FOR
+		// For row 0 -> rowCount except row r 
+		// copy(j,k)-=multiplier*copy(r,k);
+ 
 		for(size_t j=0; j<rowCount; ++j)
 		{
 			if(j!=r)
 			{
 				T multiplier = copy(j,lead);
 				for(size_t k=0; k<columnCount; ++k)
-					copy(j,k)-=multiplier*copy(r,k);
+				copy(j,k)-=multiplier*copy(r,k);
 			}
 		}
 
@@ -545,7 +544,7 @@ Matrix<T> Matrix<T>::Inverse( )
 	detType d = 1.0;
 
 	// Inverting a Matrix
-	// Breif Description of the Algorithm :
+	// Brief Description of the Algorithm :
 	// Run through columns 1 to mCols-1 using var j
 	// start with i=0. For each col find the maximum 
 	// absolute element, below i, mx, at position t.
@@ -563,6 +562,7 @@ Matrix<T> Matrix<T>::Inverse( )
 	if(nRows!=mCols)
 	{
 		det = 0.0;
+		//Exception 
 		throw IncompatibleMatricesException();
 	}
 		
@@ -584,7 +584,6 @@ Matrix<T> Matrix<T>::Inverse( )
 				mx = R(l,j);
 				t = l;
 			}
-		//cout << "("<<mx<<","<<t<<")"<<"max and t\n";
 
 
 		if(mx<SMALL) 
@@ -600,14 +599,11 @@ Matrix<T> Matrix<T>::Inverse( )
 		for(l=0; l<mCols; l++)
 		{
 			factor = R(l,j)/(detType)(R(j,j));
-			//cout << "("<<i<<","<<l<<")"<<factor;
-			//cout << "\n";
 			if(l!=j)
 				for(k=0; k<mCols;k++)
 				{
-						// row l -> row l - row j*( l,j/j,j )
-						R(l,k) -= (T) (R(j,k) * factor);
-						I(l,k) -= (T) (I(j,k) * factor);
+					R(l,k) -= (T) (R(j,k) * factor);
+					I(l,k) -= (T) (I(j,k) * factor);
 				}
 			
 		}
@@ -629,7 +625,6 @@ Matrix<T> Matrix<T>::Inverse( )
 	}
 	detValid = true;
 	det = d;
-	cout << d;
 
 	return I;
 
@@ -663,14 +658,13 @@ detType Matrix<T>::Determinant( )
 template<typename T>
 Matrix<T> Matrix<T>::RowEchelon( )
 {
-	// we will return the RowEchelon Matrix to the user
 	Matrix<T> R(nRows, mCols);
 	size_t i=0, j, k, l, t;
 	T mx;
 	detType factor;
 	bool isRowEmpty;
 
-	// Breif Description of the Algorithm :
+	// Brief Description of the Algorithm :
 	// Run through columns 1 to mCols-1 using var j
 	// start with i=0. For each col find the maximum 
 	// absolute element, below i, mx, at position t.
@@ -692,39 +686,35 @@ Matrix<T> Matrix<T>::RowEchelon( )
 		mx = R(i,j);
 		t = i;
 		for(l=j+1;l<nRows;l++)
-			if(R(l,j) > mx){ 
+		{
+			if(R(l,j) > mx)
+			{ 
 				mx = R(l,j);
 				t = l;
 			}
-		//cout << "("<<mx<<","<<t<<")"<<"max and t\n";
+		}
 
 
 		if(mx<SMALL) continue;
 		
-		// Else
 		if(i!=t) 
 			R.ExchangeRows(i, t);
 
 		for(l=i+1; l<nRows; l++)
 		{
 			factor = R(l,j)/(detType)(R(i,j));
-			//cout << "("<<i<<","<<l<<")"<<factor;
-			//cout << "\n";
 			R(l,j) = 0;
 
 			for(k=j+1; k<mCols;k++)
 				R(l,k) -= (T) (R(i,k) * factor);
 		}
 
-		//cout<<"After "<< i << "th row \n";
-		//R.Print();
-		//cout <<"\n\n";
 		i+=1;
 	}
 
 	
 
-	//we also compute the rank as a side effect
+	// Computing rank
 	for(i=0;i<nRows; ++i)
 	{
 		isRowEmpty = true;
