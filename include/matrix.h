@@ -80,7 +80,7 @@ class Matrix
 		bool ExchangeCols(size_t i, size_t j);
 
 
-		void Print();
+		void Print() const;
 		
 
 		// Important Matrix Functions
