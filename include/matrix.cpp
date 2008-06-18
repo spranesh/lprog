@@ -319,7 +319,7 @@ T & Matrix<T>::operator() (size_t row, size_t col)
 {
 	if (row >= nRows || col >= mCols)
 		//exception
-		throw IncompatibleMatricesException();
+		throw OutOfBoundsException();
 
 	ClearValidity();
 
@@ -339,7 +339,7 @@ T Matrix<T>::operator() (size_t row, size_t col) const
 {
 	if (row >= nRows || col >= mCols)
 		//exception
-		throw IncompatibleMatricesException();
+		throw OutOfBoundsException();
 	return matrix[row][col];
 } 
 
@@ -563,7 +563,7 @@ Matrix<T> Matrix<T>::Inverse( )
 	{
 		det = 0.0;
 		//Exception 
-		throw IncompatibleMatricesException();
+		throw MatrixTypeException();
 	}
 		
 

@@ -27,8 +27,26 @@ class IncompatibleMatricesException : public runtime_error
 	public:
 		IncompatibleMatricesException()
 			:runtime_error("Attempted to operate on Incompatible Matrices") {}
+		
 };
 
+// The following Exception is raised when an element out of array bounds is accessed.
+class  OutOfBoundsException: public runtime_error
+{
+	public:
+		OutOfBoundsException()
+			:runtime_error("Trying to access element out of array bounds") {}
+		
+};
+
+// The following Exception is raised when a rectangulat matrix is provided instead of a square one.
+class  MatrixTypeException: public runtime_error
+{
+	public:
+		MatrixTypeException()
+			:runtime_error("Square matrix required. Rectangular matrix was given.") {}
+		
+};
 
 
 #endif
