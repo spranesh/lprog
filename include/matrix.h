@@ -58,7 +58,7 @@ class Matrix
 		bool operator==(Matrix<T> &Other) const;
 		bool operator!=(Matrix<T> &Other) const;
 
-		Matrix<T> operator|(Matrix<T> Other);
+		Matrix<T> operator|(Matrix<T> Other) const;
 
 
 		bool ExchangeRows(size_t i, size_t j);
@@ -85,7 +85,8 @@ class Matrix
 		detType det;
 		size_t rank;
 
-		Matrix<T> Augment(Matrix<T> Other);
+		Matrix<T> Augment(Matrix<T> &Other) const;
+
 
 		bool rankValid, detValid;
 		void ClearValidity();
@@ -95,8 +96,3 @@ class Matrix
 // http://www.neowin.net/forum/index.php?s=b67d2e75582fb412b7b5c1152e934836&showtopic=633585&pid=589358876&st=0&#entry589358876
 
 #endif
-
-
-
-
-
