@@ -30,6 +30,19 @@ int main()
 		for(j=0;j<col;j++)
 			cin >> myMatrix(i,j);
 
+	cin >> row >> col;
+	Matrix<float> myMatrix2(row, col);
+	for(i=0;i<row;i++)
+		for(j=0;j<col;j++)
+			cin >> myMatrix2(i,j);
+	cout<<"\n\n";
+	(myMatrix|myMatrix2).Print();
+
+	return 0;
+}
+
+
+
 	// cin >> row>> col;
 
 	// Matrix<float> myMatrix2(row, col);
@@ -64,20 +77,13 @@ int main()
 	// cout<<myMatrix.matrix[0]<<'\n';
 	// myMatrix.ExchangeCols(0,1);
 
-//	Matrix<float> myMatrix2(myMatrix.Inverse());
+	//	Matrix<float> myMatrix2(myMatrix.Inverse());
 
-//	cout<<"\n"<<(myMatrix2!=myMatrix)<<"\n";
+	//	cout<<"\n"<<(myMatrix2!=myMatrix)<<"\n";
 
-	Matrix<float> myMatrix2(myMatrix.RowEchelon());
-	cout<<"\n\n";
-	myMatrix2.Print();
-	cout << myMatrix.Rank();
 
 	//cout<<myMatrix2.Rank()<<"\n";
-//	cin>>myMatrix(0,0);
-//	cout<<"\n"<<myMatrix(0,0);
-	return 0;
-}
-
+	// cin>>myMatrix(0,0);
+	// cout<<"\n"<<myMatrix(0,0);
 
 

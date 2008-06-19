@@ -58,6 +58,9 @@ class Matrix
 		bool operator==(Matrix<T> &Other) const;
 		bool operator!=(Matrix<T> &Other) const;
 
+		Matrix<T> operator|(Matrix<T> Other);
+
+
 		bool ExchangeRows(size_t i, size_t j);
 		bool ExchangeCols(size_t i, size_t j);
 
@@ -81,6 +84,8 @@ class Matrix
 
 		detType det;
 		size_t rank;
+
+		Matrix<T> Augment(Matrix<T> Other);
 
 		bool rankValid, detValid;
 		void ClearValidity();

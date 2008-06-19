@@ -379,6 +379,18 @@ bool Matrix<T>::operator!=(Matrix<T> &Other) const
 
 
 /*------------------------------------------------------
+ * Matrix<T>::operator| -- acts as a pubilc wrapper for 
+ * augment
+ * Args: Matrix<T> Other
+ * Returns: Matrix<T>
+ *------------------------------------------------------*/
+template<typename T>
+Matrix<T> Matrix<T>::operator|(Matrix<T> Other)
+{
+	return Augment(Other);
+}
+
+/*------------------------------------------------------
  * Matrix<T>::GetRow -- Get a Row
  * Args: size_t row
  * Returns: vector<T>
@@ -756,6 +768,36 @@ size_t Matrix<T>::Rank( )
 	}
 }
 
+
+/*------------------------------------------------------
+ * Augment -- Augments Other matrix to the right of *this
+ * Private function, forming the back of '|'
+ * Args: Matrix<T> Other
+ * Returns: Matrix<T>
+ *------------------------------------------------------*/
+template<typename T>
+Matrix<T> Matrix<T>::Augment(Matrix<T> Other)
+{
+	size_t newCols = mCols + Other.GetNumCols();
+	size_t newRows = nRows;
+	size_t i, j;
+
+	if(nRows!=Other.GetNumRows())
+		throw IncompatibleMatricesException();
+
+	Matrix<T> R(newRows, newCols);
+
+	for(i=0; i<nRows;i++)
+	{
+		for(j=0; j<mCols;j++)
+			R(i,j) = matrix[i][j];
+		
+		for(j=0;j<Other.GetNumCols();j++)
+			R(i,j+mCols) = Other(i,j);
+	}
+
+	return R;
+}
 
 
 /*------------------------------------------------------
