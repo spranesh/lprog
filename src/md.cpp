@@ -64,14 +64,15 @@ int main()
 	// cout<<myMatrix.matrix[0]<<'\n';
 	// myMatrix.ExchangeCols(0,1);
 
-	Matrix<float> myMatrix2(myMatrix);
-	Matrix<float> myMatrix3(myMatrix + myMatrix2);
 //	Matrix<float> myMatrix2(myMatrix.Inverse());
 
-	myMatrix3.Print();
 //	cout<<"\n"<<(myMatrix2!=myMatrix)<<"\n";
+
+	Matrix<float> myMatrix2(myMatrix.RowEchelon());
 	cout<<"\n\n";
-	myMatrix.Print();
+	myMatrix2.Print();
+	cout << myMatrix.Rank();
+
 	//cout<<myMatrix2.Rank()<<"\n";
 //	cin>>myMatrix(0,0);
 //	cout<<"\n"<<myMatrix(0,0);

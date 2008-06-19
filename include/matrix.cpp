@@ -683,13 +683,13 @@ Matrix<T> Matrix<T>::RowEchelon( )
 
 	for(j=0;j<mCols-1 && i<nRows;j++)
 	{
-		mx = R(i,j);
+		mx = ABS(R(i,j));
 		t = i;
 		for(l=j+1;l<nRows;l++)
 		{
-			if(R(l,j) > mx)
+			if(ABS(R(l,j)) > mx)
 			{ 
-				mx = R(l,j);
+				mx = ABS(R(l,j));
 				t = l;
 			}
 		}
@@ -720,7 +720,7 @@ Matrix<T> Matrix<T>::RowEchelon( )
 		isRowEmpty = true;
 		for(j=0;j<mCols; ++j)
 		{
-			if(ABS( (*this)(i,j) ) < SMALL)
+			if(ABS(R(i,j)) > SMALL)
 			{
 				isRowEmpty = false;
 				break;
