@@ -365,13 +365,13 @@ bool Matrix<T>::operator==(Matrix<T> &Other) const
 }
 
 
-template <typename T> 
 /*------------------------------------------------------
  * operator== -- overloads the equality operator
  * Args: constant reference to another matrix
  * Returns: boolean value
  * uses the == operator
  *------------------------------------------------------*/
+template <typename T> 
 bool Matrix<T>::operator!=(Matrix<T> &Other) const
 {
 	return !(*this == Other);
@@ -385,7 +385,7 @@ bool Matrix<T>::operator!=(Matrix<T> &Other) const
  * Returns: Matrix<T>
  *------------------------------------------------------*/
 template<typename T>
-Matrix<T> Matrix<T>::operator|(Matrix<T> Other)
+Matrix<T> Matrix<T>::operator|(Matrix<T> Other) const
 {
 	return Augment(Other);
 }
@@ -446,12 +446,12 @@ bool Matrix<T>::ExchangeRows(size_t i, size_t j)
 	return true;
 }
 	
-template<typename T>
 /*------------------------------------------------------
  * Matrix<T>::ExchangeCols -- 
  * Args: size_t i, size_t j
  * Returns: bool
  *------------------------------------------------------*/
+template<typename T>
 bool Matrix<T>::ExchangeCols(size_t i, size_t j)
 {
 	if(i>=mCols || j>=mCols )
@@ -776,7 +776,7 @@ size_t Matrix<T>::Rank( )
  * Returns: Matrix<T>
  *------------------------------------------------------*/
 template<typename T>
-Matrix<T> Matrix<T>::Augment(Matrix<T> Other)
+Matrix<T> Matrix<T>::Augment(Matrix<T> &Other) const
 {
 	size_t newCols = mCols + Other.GetNumCols();
 	size_t newRows = nRows;
