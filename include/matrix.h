@@ -33,6 +33,7 @@ class Matrix
 	public:
 		Matrix(size_t n, size_t m);
 		Matrix(const Matrix<T> &Other);
+		Matrix(size_t n,bool identity);
 
 		size_t GetNumRows() const;
 		size_t GetNumCols() const;
@@ -59,6 +60,7 @@ class Matrix
 		bool operator!=(Matrix<T> &Other) const;
 
 		Matrix<T> operator|(Matrix<T> Other) const;
+		Matrix<T> operator/(Matrix<T> Other) const;
 
 
 		bool ExchangeRows(size_t i, size_t j);
@@ -85,7 +87,8 @@ class Matrix
 		detType det;
 		size_t rank;
 
-		Matrix<T> Augment(Matrix<T> &Other) const;
+		Matrix<T> RowAugment(Matrix<T> &Other) const;
+		Matrix<T> ColAugment(Matrix<T> &Other) const;
 
 
 		bool rankValid, detValid;

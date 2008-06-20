@@ -24,11 +24,11 @@ int main()
 {
 	size_t i, j;
 	size_t row, col;
-	cin >> row >> col;
+	cin >> row >> col ;
 	Matrix<float> myMatrix(row, col);
 	for(i=0;i<row;i++)
 		for(j=0;j<col;j++)
-			cin >> myMatrix(i,j);
+	 		cin >> myMatrix(i,j);
 
 	cin >> row >> col;
 	Matrix<float> myMatrix2(row, col);
@@ -36,7 +36,9 @@ int main()
 		for(j=0;j<col;j++)
 			cin >> myMatrix2(i,j);
 	cout<<"\n\n";
-	(myMatrix|myMatrix2).Print();
+	(myMatrix/myMatrix2).Print();
+
+
 
 	return 0;
 }
@@ -86,4 +88,11 @@ int main()
 	// cin>>myMatrix(0,0);
 	// cout<<"\n"<<myMatrix(0,0);
 
+	// cin >> row >> col;
+	// Matrix<float> myMatrix2(row, col);
+	// for(i=0;i<row;i++)
+	// 	for(j=0;j<col;j++)
+	// 		cin >> myMatrix2(i,j);
+	// cout<<"\n\n";
+	// (myMatrix|myMatrix2).Print();
 

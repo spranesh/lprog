@@ -54,6 +54,32 @@ Matrix<T>::Matrix(const Matrix<T> &Other)
 }
 
 /*------------------------------------------------------
+ * Matrix<T>::Identity  
+ * Args: size_t n
+ * Returns: Matrix<T>
+ *------------------------------------------------------*/
+template <typename T>
+Matrix<T>::Matrix(size_t n, bool identity)
+{
+	nRows = n;
+	mCols = n;
+
+	matrix = new T*[nRows];
+	
+	size_t i,j;
+	for(i=0;i<nRows; ++i)
+		matrix[i] = new T[mCols];
+
+	for(i=0;i<n;i++)
+		for(j=0;j<n;j++)
+			matrix[i][j]=0;
+
+	if(identity)
+		for(i=0;i<n;++i)
+			matrix[i][i]=1;
+}
+
+/*------------------------------------------------------
  * Matrix<T>::ClearValidity() - clears validity of cache
  * Returns: void
  *------------------------------------------------------*/
@@ -380,15 +406,30 @@ bool Matrix<T>::operator!=(Matrix<T> &Other) const
 
 /*------------------------------------------------------
  * Matrix<T>::operator| -- acts as a pubilc wrapper for 
- * augment
+ * RowAugment
  * Args: Matrix<T> Other
  * Returns: Matrix<T>
  *------------------------------------------------------*/
 template<typename T>
 Matrix<T> Matrix<T>::operator|(Matrix<T> Other) const
 {
-	return Augment(Other);
+	return RowAugment(Other);
 }
+
+
+/*------------------------------------------------------
+ * Matrix<T>::operator/ -- acts as a pubilc wrapper for 
+ * ColAugment
+ * Args: Matrix<T> Other
+ * Returns: Matrix<T>
+ *------------------------------------------------------*/
+template<typename T>
+Matrix<T> Matrix<T>::operator/(Matrix<T> Other) const
+{
+	return ColAugment(Other);
+}
+
+
 
 /*------------------------------------------------------
  * Matrix<T>::GetRow -- Get a Row
@@ -770,13 +811,13 @@ size_t Matrix<T>::Rank( )
 
 
 /*------------------------------------------------------
- * Augment -- Augments Other matrix to the right of *this
+ * RowAugment -- Augments Other matrix to the right of *this
  * Private function, forming the back of '|'
  * Args: Matrix<T> Other
  * Returns: Matrix<T>
  *------------------------------------------------------*/
 template<typename T>
-Matrix<T> Matrix<T>::Augment(Matrix<T> &Other) const
+Matrix<T> Matrix<T>::RowAugment(Matrix<T> &Other) const
 {
 	size_t newCols = mCols + Other.GetNumCols();
 	size_t newRows = nRows;
@@ -795,6 +836,35 @@ Matrix<T> Matrix<T>::Augment(Matrix<T> &Other) const
 		for(j=0;j<Other.GetNumCols();j++)
 			R(i,j+mCols) = Other(i,j);
 	}
+
+	return R;
+}
+
+/*------------------------------------------------------
+ * ColAugment -- Augments Other matrix to the bottom of *this
+ * Private function, forming the back of '/'
+ * Args: Matrix<T> &Other
+ * Returns: Matrix<T>
+ * Throws: IncompatibleMatricesException
+ *------------------------------------------------------*/
+template<typename T>
+Matrix<T> Matrix<T>::ColAugment(Matrix<T> &Other) const
+{
+	size_t newRows = nRows + Other.GetNumRows();
+	size_t newCols = mCols;
+	size_t i,j;
+
+	if(mCols != Other.GetNumCols())
+		throw IncompatibleMatricesException();
+
+	Matrix<T> R(newRows,newCols);
+
+	for(i=0; i<nRows; ++i)
+		for(j=0; j<newCols; ++j)
+			R(i,j) = matrix[i][j];
+	for(i=0; i<newRows - nRows; ++i)
+		for(j=0;j<newCols;j++)
+			R(i+nRows,j) = Other(i,j);
 
 	return R;
 }
